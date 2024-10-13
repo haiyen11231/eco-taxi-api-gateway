@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package trip_service;
+
+option go_package = "/internal/grpc/pb";
+
+import "google/protobuf/timestamp.proto";
+
+service TripService {
+  rpc GetTripPreview(GetTripPreviewRequest) returns(GetTripPreviewResponse);
+  rpc ConfirmBooking(ConfirmBookingRequest) returns(ConfirmBookingResponse);
+  rpc UpdateBookingStatus(UpdateBookingRequest) returns (UpdateBookingResponse);
+  rpc GetBookingHistory(GetBookingHistoryRequest) returns (GetBookingHistoryResponse);
+}
+
+message Pagination {
+  uint64 current_page = 1;
+  uint64 prev_page = 2;
+  uint64 next_page = 3;
+  uint64 total_page = 4;
+}
+
+enum BookingStatus {
+  BOOKING_INCOMPLETED = 0;        // The booking has been confirmed but not completed
+  BOOKING_COMPLETED = 1;          // The booking has been completed
+  BOOKING_CANCELED = 2;           // The booking has been canceled
+}
+
+message TripBooking {
+  uint64 id = 1;
+  string pickup = 2;
+  string destination = 3;
+  double distance = 4;
+  double fare = 5;
+  string payment_method = 6;
+  google.protobuf.Timestamp date = 7;
+  BookingStatus booking_status = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+  google.protobuf.Timestamp deleted_at = 11;
+}
+
+message GetTripPreviewRequest {
+  string pickup = 1;
+  string destination = 2;
+}
+
+message GetTripPreviewResponse {
+  string pickup = 1;
+  string destination = 2;
+  double distance = 3;
+  double fare = 4;
+  google.protobuf.Timestamp estimated_arrival_time = 5;
+  int64 estimated_waiting_time = 6;
+  int64 num_of_available_taxis = 7;
+  double nearest_taxi_longitude = 8;
+  double nearest_taxi_latitude = 9;
+  string default_payment_method = 10;
+}
+
+message ConfirmBookingRequest {
+  string pickup = 1;
+  string destination = 2;
+  double distance = 3;
+  double fare = 4;
+  google.protobuf.Timestamp estimated_arrival_time = 5;
+  int64 estimated_waiting_time = 6;
+  int64 num_of_available_taxis = 7;
+  double nearest_taxi_longitude = 8;
+  double nearest_taxi_latitude = 9;
+  string default_payment_method = 10;
+}
+
+message ConfirmBookingResponse {
+  string result = 1;
+  uint64 id = 2;
+  google.protobuf.Timestamp estimated_arrival_time = 3;
+  int64 estimated_waiting_time = 4;
+  BookingStatus booking_status = 5;
+}
+
+// For cancelling or completed
+message UpdateBookingRequest { 
+  uint64 id = 1;
+  google.protobuf.Timestamp estimated_arrival_time = 2;
+  int64 estimated_waiting_time = 3;
+  BookingStatus booking_status = 4;
+}
+
+message UpdateBookingResponse {
+  string result = 1;
+}
+
+message GetBookingHistoryRequest {
+  uint64 page = 1;
+  uint64 limit = 2;
+  // for filtering
+  bool cash_payment = 3; 
+  bool card_payment = 4;
+  bool is_incompleted = 5;
+  bool is_completed = 6;
+  bool is_cancelled = 7;
+  bool sort_by_date = 8; //nearest booking first,...
+  bool sort_by_payment_method = 9; //trips paid by cash first, then card
+  bool sort_by_booking_status = 10; //trip are in incompleted first, then completed and cancelled
+}
+
+message GetBookingHistoryResponse {
+  Pagination pagination = 1;
+  repeated TripBooking result = 2;
+}

@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package user_service;
+
+option go_package = "/internal/grpc/pb";
+
+import "google/protobuf/timestamp.proto";
+
+message User {
+    uint64 id = 1;
+    string name = 2;
+    string phone_number = 3;
+    string email = 4;
+    string password = 5;
+    double distance_travelled = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+    google.protobuf.Timestamp deleted_at = 9;
+}
+
+service UserService {
+    rpc SignUp (SignUpRequest) returns (SignUpResponse);
+    rpc LogIn (LogInRequest) returns (LogInResponse);
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
+    rpc GetUser (GetUserRequest) returns (GetUserResponse);
+    rpc Verify (VerifyRequest) returns (VerifyResponse);
+}
+
+message SignUpRequest {
+    string name = 1;
+    string phone_number = 2;
+    string email = 3;
+    string password = 4;
+}
+  
+message SignUpResponse {
+    string token = 1;
+}
+  
+message LogInRequest {
+    string phone_number = 1;
+    string password = 2;
+}
+  
+message LogInResponse {
+    string token = 1;
+}
+
+message LogOutRequest {
+    string name = 1;
+    string phone_number = 2;
+    string email = 3;
+    string password = 4;
+}
+  
+message LogOutResponse {
+    int32 status_code = 1;
+    string message = 2;
+}
+
+message UpdateUserRequest {
+    string name = 1;
+    string phone_number = 2;
+    string email = 3;
+    string password = 4;
+}
+  
+message UpdateUserResponse {
+    int32 status_code = 1;
+    string message = 2;
+}
+
+message GetUserRequest {
+}
+  
+message GetUserResponse {
+    string name = 1;
+    string phone_number = 2;
+    string email = 3;
+    string password = 4;
+    double distance_travelled = 5;
+}
+  
+message VerifyRequest {
+    string token = 1;
+}
+  
+message VerifyResponse {
+    bool valid = 1;
+    string message = 2;
+    uint64 user_id = 3;
+}

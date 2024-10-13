@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package payment_service;
+
+option go_package = "/internal/grpc/pb";
+
+import "google/protobuf/timestamp.proto";
+
+service PaymentService {
+  rpc GetCards(GetCardsRequest) returns(GetCardsResponse);
+  rpc CreateCard(CreateCardRequest) returns(CreateCardResponse);
+  rpc UpdatecCard(UpdateCardRequest) returns(UpdateCardResponse);
+  rpc DeleteCard(DeleteCardRequest) returns(DeleteCardResponse);
+}
+
+message Card {
+    uint64 id = 1;
+    string card_number = 2;
+    string card_holder = 3;
+    google.protobuf.Timestamp expiry_date = 4;
+    uint64 cvv = 5;
+    bool is_default = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+    google.protobuf.Timestamp deleted_at = 9;
+}
+
+message GetCardsRequest {
+}
+
+message GetCardsResponse {
+    repeated Card result = 1;
+}
+
+message CreateCardRequest {
+    string card_number = 1;
+    string card_holder = 2;
+    google.protobuf.Timestamp expiry_date = 3;
+    uint64 cvv = 4;
+    bool is_default = 5;
+}
+
+message CreateCardResponse {
+    string result = 1;
+}
+
+message UpdateCardRequest {
+    uint64 id = 1;
+    string card_number = 2;
+    string card_holder = 3;
+    google.protobuf.Timestamp expiry_date = 4;
+    uint64 cvv = 5;
+    bool is_default = 6;
+}
+
+message UpdateCardResponse {
+    string result = 1;
+}
+
+message DeleteCardRequest {
+  uint64 id = 1;
+}
+
+message DeleteCardResponse {
+  string result = 1;
+}
