@@ -7,7 +7,7 @@ option go_package = "/internal/grpc/pb";
 import "google/protobuf/timestamp.proto";
 
 service TripService {
-  rpc GetTripPreview(GetTripPreviewRequest) returns(GetTripPreviewResponse);
+  rpc SearchTripPreview(SearchTripPreviewRequest) returns(SearchTripPreviewResponse);
   rpc ConfirmBooking(ConfirmBookingRequest) returns(ConfirmBookingResponse);
   rpc UpdateBookingStatus(UpdateBookingRequest) returns (UpdateBookingResponse);
   rpc GetBookingHistory(GetBookingHistoryRequest) returns (GetBookingHistoryResponse);
@@ -41,12 +41,12 @@ message TripBooking {
   google.protobuf.Timestamp deleted_at = 12;
 }
 
-message GetTripPreviewRequest {
+message SearchTripPreviewRequest {
   string pickup = 1;
   string destination = 2;
 }
 
-message GetTripPreviewResponse {
+message SearchTripPreviewResponse {
   string pickup = 1;
   string destination = 2;
   double distance = 3;
@@ -97,15 +97,13 @@ message UpdateBookingResponse {
 message GetBookingHistoryRequest {
   uint64 page = 1;
   uint64 limit = 2;
-  // for filtering
-  bool cash_payment = 3; 
-  bool card_payment = 4;
-  bool is_incompleted = 5;
-  bool is_completed = 6;
-  bool is_cancelled = 7;
-  bool sort_by_date = 8; //nearest booking first,...
-  bool sort_by_payment_method = 9; //trips paid by cash first, then card
-  bool sort_by_booking_status = 10; //trip are in incompleted first, then completed and cancelled
+  uint64 userId = 3;
+  // Filters
+  repeated string payment_methods = 4; // List of payment methods to filter by
+  repeated BookingStatus booking_statuses = 5; // List of booking statuses to filter by
+  
+  // Sorting
+  bool order_asc = 6; // If true, order by ascending date; if false, order by descending
 }
 
 message GetBookingHistoryResponse {

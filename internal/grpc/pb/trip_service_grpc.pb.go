@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	TripService_GetTripPreview_FullMethodName      = "/trip_service.TripService/GetTripPreview"
+	TripService_SearchTripPreview_FullMethodName   = "/trip_service.TripService/SearchTripPreview"
 	TripService_ConfirmBooking_FullMethodName      = "/trip_service.TripService/ConfirmBooking"
 	TripService_UpdateBookingStatus_FullMethodName = "/trip_service.TripService/UpdateBookingStatus"
 	TripService_GetBookingHistory_FullMethodName   = "/trip_service.TripService/GetBookingHistory"
@@ -29,7 +29,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TripServiceClient interface {
-	GetTripPreview(ctx context.Context, in *GetTripPreviewRequest, opts ...grpc.CallOption) (*GetTripPreviewResponse, error)
+	SearchTripPreview(ctx context.Context, in *SearchTripPreviewRequest, opts ...grpc.CallOption) (*SearchTripPreviewResponse, error)
 	ConfirmBooking(ctx context.Context, in *ConfirmBookingRequest, opts ...grpc.CallOption) (*ConfirmBookingResponse, error)
 	UpdateBookingStatus(ctx context.Context, in *UpdateBookingRequest, opts ...grpc.CallOption) (*UpdateBookingResponse, error)
 	GetBookingHistory(ctx context.Context, in *GetBookingHistoryRequest, opts ...grpc.CallOption) (*GetBookingHistoryResponse, error)
@@ -43,10 +43,10 @@ func NewTripServiceClient(cc grpc.ClientConnInterface) TripServiceClient {
 	return &tripServiceClient{cc}
 }
 
-func (c *tripServiceClient) GetTripPreview(ctx context.Context, in *GetTripPreviewRequest, opts ...grpc.CallOption) (*GetTripPreviewResponse, error) {
+func (c *tripServiceClient) SearchTripPreview(ctx context.Context, in *SearchTripPreviewRequest, opts ...grpc.CallOption) (*SearchTripPreviewResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetTripPreviewResponse)
-	err := c.cc.Invoke(ctx, TripService_GetTripPreview_FullMethodName, in, out, cOpts...)
+	out := new(SearchTripPreviewResponse)
+	err := c.cc.Invoke(ctx, TripService_SearchTripPreview_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (c *tripServiceClient) GetBookingHistory(ctx context.Context, in *GetBookin
 // All implementations must embed UnimplementedTripServiceServer
 // for forward compatibility.
 type TripServiceServer interface {
-	GetTripPreview(context.Context, *GetTripPreviewRequest) (*GetTripPreviewResponse, error)
+	SearchTripPreview(context.Context, *SearchTripPreviewRequest) (*SearchTripPreviewResponse, error)
 	ConfirmBooking(context.Context, *ConfirmBookingRequest) (*ConfirmBookingResponse, error)
 	UpdateBookingStatus(context.Context, *UpdateBookingRequest) (*UpdateBookingResponse, error)
 	GetBookingHistory(context.Context, *GetBookingHistoryRequest) (*GetBookingHistoryResponse, error)
@@ -101,8 +101,8 @@ type TripServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedTripServiceServer struct{}
 
-func (UnimplementedTripServiceServer) GetTripPreview(context.Context, *GetTripPreviewRequest) (*GetTripPreviewResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetTripPreview not implemented")
+func (UnimplementedTripServiceServer) SearchTripPreview(context.Context, *SearchTripPreviewRequest) (*SearchTripPreviewResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchTripPreview not implemented")
 }
 func (UnimplementedTripServiceServer) ConfirmBooking(context.Context, *ConfirmBookingRequest) (*ConfirmBookingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfirmBooking not implemented")
@@ -134,20 +134,20 @@ func RegisterTripServiceServer(s grpc.ServiceRegistrar, srv TripServiceServer) {
 	s.RegisterService(&TripService_ServiceDesc, srv)
 }
 
-func _TripService_GetTripPreview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetTripPreviewRequest)
+func _TripService_SearchTripPreview_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchTripPreviewRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TripServiceServer).GetTripPreview(ctx, in)
+		return srv.(TripServiceServer).SearchTripPreview(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TripService_GetTripPreview_FullMethodName,
+		FullMethod: TripService_SearchTripPreview_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TripServiceServer).GetTripPreview(ctx, req.(*GetTripPreviewRequest))
+		return srv.(TripServiceServer).SearchTripPreview(ctx, req.(*SearchTripPreviewRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -214,8 +214,8 @@ var TripService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*TripServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetTripPreview",
-			Handler:    _TripService_GetTripPreview_Handler,
+			MethodName: "SearchTripPreview",
+			Handler:    _TripService_SearchTripPreview_Handler,
 		},
 		{
 			MethodName: "ConfirmBooking",

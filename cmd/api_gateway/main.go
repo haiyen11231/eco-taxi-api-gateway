@@ -39,19 +39,19 @@ func main() {
     user.POST("/login", handler.LogIn()) // Endpoint for user login
     user.PATCH("/update", handler.UpdateUser()) // Endpoint for user update 
     user.GET("/", handler.GetUser()) // Endpoint for getting user info
-    user.POST("/verify", handler.Verify()) // Endpoint for verifying user authentication
+    user.POST("/authenticate", handler.Verify()) // Endpoint for verifying user authentication
 
-//     rpc GetTripPreview(GetTripPreviewRequest) returns(GetTripPreviewResponse);
-//   rpc ConfirmBooking(ConfirmBookingRequest) returns(ConfirmBookingResponse);
-//   rpc UpdateBookingStatus(UpdateBookingRequest) returns (UpdateBookingResponse);
-//   rpc GetBookingHistory(GetBookingHistoryRequest) returns (GetBookingHistoryResponse);
     trip := v1.Group("/trip")
+    trip.POST("/", handler.SearchTripPreview())
     trip.Use(middleware.VerifyToken) // Middleware to verify JWT tokens
+    trip.POST("/confirm", handler.ConfirmBooking())
+    trip.PATCH("/:id", handler.UpdateBookingStatus())
+    trip.GET("/history", handler.GetBookingHistory())
     
     payment := v1.Group("/payment")
     payment.Use(middleware.VerifyToken) // Middleware to verify JWT tokens
     payment.GET("/", handler.GetCards()) // Fetch all cards
-    payment.POST("/", handler.CreateCard()) // Create a new card
+    payment.POST("/create", handler.CreateCard()) // Create a new card
     payment.PATCH("/:id", handler.UpdateCard()) // Update card by ID
     payment.DELETE("/:id", handler.DeleteCard()) // Delete card by ID
 

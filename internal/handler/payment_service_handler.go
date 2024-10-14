@@ -81,10 +81,6 @@ func GetCards() gin.HandlerFunc {
     }
 }
 
-// rpc CreateCard(CreateCardRequest) returns(CreateCardResponse);
-    // rpc UpdatecCard(UpdateCardRequest) returns(UpdateCardResponse);
-    // rpc DeleteCard(DeleteCardRequest) returns(DeleteCardResponse);
-
 func CreateCard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		createCard := CreateCardData{}
@@ -143,7 +139,7 @@ func UpdateCard() gin.HandlerFunc {
 		updateCard := UpdateCardData{}
 		userId := ctx.GetUint64("user_id")
 
-        // Binds the incoming request to create card.
+        // Binds the incoming request to update card.
 		if err := ctx.ShouldBindJSON(&updateCard); err != nil {
 			log.Println("Failed binding json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
@@ -176,7 +172,7 @@ func UpdateCard() gin.HandlerFunc {
 
         // If updating card fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
 		if err != nil {
-			log.Println("Failed to update", err)
+			log.Println("Failed to update card", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -207,13 +203,15 @@ func DeleteCard() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
 
-        // Sends a UpdateCardRequest to the gRPC service for updating card.
+        // Sends a DeleteCardRequest to the gRPC service for deleting card.
 		response, err := client.DeleteCard(c, &pb.DeleteCardRequest{
 			Id:     uint64(id),
 			UserId: ctx.GetUint64("user_id"),
 		})
+
+		// If deleting card fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
 		if err != nil {
-			log.Println("Failed to delete", err)
+			log.Println("Failed to delete card", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
