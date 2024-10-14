@@ -11,7 +11,7 @@ This is a sample implementation of a microservices architecture using [gRPC](htt
 To build and run the services, follow these steps:
 
 1.  Clone this repository.
-2.  Navigate to the `go-gin-microservices-grpc` directory.
+2.  Navigate to the `eco-taxi-api-gateway` directory.
 3.  Run `make up_build` to build the Docker images for the services.
 4.  Server will be running at http://localhost:8081/
 
@@ -21,64 +21,46 @@ Once the services are running, you can test them with Postman by sending HTTP re
 
 The directory structure for the services is as follows:
 
-```
-.
-├── Makefile
-├── README.md
-├── docker-compose.yml
-├── api-gateway
-│   ├── Dockerfile
-│   ├── go.mod
-│   ├── go.sum
-│   ├── handlers
-│   │   ├── authentication.go
-│   │   └── products.go
-│   ├── main.go
-│   ├── middleware
-│   │   └── verify.go
-│   ├── pb
-│   │   ├── product.pb.go
-│   │   ├── product.proto
-│   │   ├── product_grpc.pb.go
-│   │   ├── users.pb.go
-│   │   ├── users.proto
-│   │   └── users_grpc.pb.go
-│   └── utils
-│       ├── grpc.go
+```plaintext
+eco-taxi-api-gateway/
+│
+├── cmd/
+│   └── api_gateway/
+│       └── main.go
+│
+├── internal/
+│   ├── grpc/
+│   │   ├── pb/
+│   │   |   ├── payment_service_grpc.pb.go
+│   │   |   ├── payment_service.pb.go
+│   │   |   ├── trip_service_grpc.pb.go
+│   │   |   ├── trip_service.pb.go
+│   │   |   ├── user_service_grpc.pb.go
+│   │   |   └── user_service.pb.go
+│   │   |
+│   │   ├── payment_service.proto
+│   │   ├── trip_service.proto
+│   │   └── user_service.proto
+│   │
+│   ├── handler/
+│   │   ├── payment_service_handler.go
+│   │   ├── trip_service_handler.go
+│   │   └── user_service_handler.go
+│   │
+│   ├── middleware/
+│   │   └── verify_token.go
+│   │
+│   └── utils/
+│       ├── grpc_client_connect.go
 │       └── response.go
-├── auth-service
-│   ├── Dockerfile
-│   ├── config
-│   │   └── database.go
-│   ├── go.mod
-│   ├── go.sum
-│   ├── main.go
-│   ├── models
-│   │   ├── auto_migrate.go
-│   │   └── users.go
-│   ├── pb
-│   │   ├── users.pb.go
-│   │   ├── users.proto
-│   │   └── users_grpc.pb.go
-│   └── server
-│       └── users.go
-└── product-service
-    ├── Dockerfile
-    ├── config
-    │   ├── database.go
-    │   └── redis.go
-    ├── go.mod
-    ├── go.sum
-    ├── main.go
-    ├── models
-    │   ├── auto_migrate.go
-    │   └── products.go
-    ├── pb
-    │   ├── product.pb.go
-    │   ├── product.proto
-    │   └── product_grpc.pb.go
-    └── server
-        └── products.go
+│
+├── app.env
+├── docker-compose.yml
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── Makefile
+└── README.md
 ```
 
 ## System Architecture Diagram

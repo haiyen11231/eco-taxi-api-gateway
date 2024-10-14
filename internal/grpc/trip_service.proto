@@ -35,9 +35,10 @@ message TripBooking {
   string payment_method = 6;
   google.protobuf.Timestamp date = 7;
   BookingStatus booking_status = 8;
-  google.protobuf.Timestamp created_at = 9;
-  google.protobuf.Timestamp updated_at = 10;
-  google.protobuf.Timestamp deleted_at = 11;
+  uint64 userId = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  google.protobuf.Timestamp deleted_at = 12;
 }
 
 message GetTripPreviewRequest {
@@ -69,6 +70,7 @@ message ConfirmBookingRequest {
   double nearest_taxi_longitude = 8;
   double nearest_taxi_latitude = 9;
   string default_payment_method = 10;
+  uint64 userId = 11;
 }
 
 message ConfirmBookingResponse {
@@ -85,6 +87,7 @@ message UpdateBookingRequest {
   google.protobuf.Timestamp estimated_arrival_time = 2;
   int64 estimated_waiting_time = 3;
   BookingStatus booking_status = 4;
+  uint64 userId = 5;
 }
 
 message UpdateBookingResponse {

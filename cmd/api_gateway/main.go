@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/haiyen11231/eco-taxi-api-gateway/internal/handlers"
+	"github.com/haiyen11231/eco-taxi-api-gateway/internal/handler"
 	"github.com/haiyen11231/eco-taxi-api-gateway/internal/middleware"
 
 	"github.com/gin-contrib/cors"
@@ -35,32 +35,25 @@ func main() {
    })
 
     user := v1.Group("/user")
-    user.POST("/signup", handlers.Register()) // Endpoint for user signup
-    user.POST("/login", handlers.Login()) // Endpoint for user login
-    user.PATCH("/update", handlers.Login()) // Endpoint for user update 
-    user.GET("/", handlers.Login()) // Endpoint for getting user info
-    user.POST("/verify", handlers.Verify()) // Endpoint for verifying user authentication
+    user.POST("/signup", handler.SignUp()) // Endpoint for user signup
+    user.POST("/login", handler.LogIn()) // Endpoint for user login
+    user.PATCH("/update", handler.UpdateUser()) // Endpoint for user update 
+    user.GET("/", handler.GetUser()) // Endpoint for getting user info
+    user.POST("/verify", handler.Verify()) // Endpoint for verifying user authentication
 
 //     rpc GetTripPreview(GetTripPreviewRequest) returns(GetTripPreviewResponse);
 //   rpc ConfirmBooking(ConfirmBookingRequest) returns(ConfirmBookingResponse);
 //   rpc UpdateBookingStatus(UpdateBookingRequest) returns (UpdateBookingResponse);
 //   rpc GetBookingHistory(GetBookingHistoryRequest) returns (GetBookingHistoryResponse);
     trip := v1.Group("/trip")
-    trip.GET("/", handlers.GetAllProduct()) // Fetch all products
-    trip.GET("/:id", handlers.GetProduct()) // Fetch a single product by ID
-
-// rpc GetCards(GetCardsRequest) returns(GetCardsResponse);
-//   rpc CreateCard(CreateCardRequest) returns(CreateCardResponse);
-//   rpc UpdatecCard(UpdateCardRequest) returns(UpdateCardResponse);
-//   rpc DeleteCard(DeleteCardRequest) returns(DeleteCardResponse);
-    payment := v1.Group("/payment")
-    payment.GET("/", handlers.GetAllProduct()) // Fetch all products
-    payment.GET("/:id", handlers.GetProduct()) // Fetch a single product by ID
-
     trip.Use(middleware.VerifyToken) // Middleware to verify JWT tokens
-    trip.POST("/", handlers.CreateProduct()) // Create a new product
-    trip.PATCH("/:id", handlers.UpdateProduct()) // Update product by ID
-    trip.DELETE("/:id", handlers.DeleteProduct()) // Delete product by ID
+    
+    payment := v1.Group("/payment")
+    payment.Use(middleware.VerifyToken) // Middleware to verify JWT tokens
+    payment.GET("/", handler.GetCards()) // Fetch all cards
+    payment.POST("/", handler.CreateCard()) // Create a new card
+    payment.PATCH("/:id", handler.UpdateCard()) // Update card by ID
+    payment.DELETE("/:id", handler.DeleteCard()) // Delete card by ID
 
     r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 
