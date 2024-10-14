@@ -14,34 +14,34 @@ import (
 )
 
 // for signup and update
-type User struct {
+type UserData struct {
 	Name        string `json:"name" binding:"required"`
 	PhoneNumber string `json:"phone_number" binding:"required"`
 	Email       string `json:"email" binding:"required"`
 	Password    string `json:"password" binding:"required"`
 }
 
-type LogInUser struct {
+type LogInUserData struct {
 	PhoneNumber string `json:"phone_number" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-type VerifyUser struct {
+type AuthenticateUserData struct {
 	Token string `json:"token" binding:"required"`
 }
 
 func SignUp() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		signUpUser := User{}
+		userData := UserData{}
 
-		// Binds the incoming request to signUp.
-		if err := ctx.ShouldBindJSON(&signUpUser); err != nil {
-			log.Println("Failed to binding json", err)
+		// Binding the incoming request to signup
+		if err := ctx.ShouldBindJSON(&userData); err != nil {
+			log.Println("Failed to bind json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		// Establishes a gRPC connection.
+		// Establishing a gRPC connection
 		conn, err := utils.GRPCClient(os.Getenv("GRPC_USER_HOST"))
 		if err != nil {
 			log.Println("Failed to dial", err)
@@ -54,12 +54,12 @@ func SignUp() gin.HandlerFunc {
 		c, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		// Sends a SignUpRequest with user details to the gRPC service for signup.
+		// Sending a SignUpRequest with user details to the gRPC service for signup
 		response, err := client.SignUp(c, &pb.SignUpRequest{
-			Name: signUpUser.Name,
-			PhoneNumber: signUpUser.PhoneNumber,
-			Email: signUpUser.Email,
-			Password: signUpUser.Password,
+			Name: userData.Name,
+			PhoneNumber: userData.PhoneNumber,
+			Email: userData.Email,
+			Password: userData.Password,
 		})
 
 		// If signup fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
@@ -75,16 +75,16 @@ func SignUp() gin.HandlerFunc {
 
 func LogIn() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		logInUser := LogInUser{}
+		logInUserData := LogInUserData{}
 
-		// Binds the incoming request to logIn.
-		if err := ctx.ShouldBindJSON(&logInUser); err != nil {
-			log.Println("Failed to binding json", err)
+		// Binding the incoming request to login
+		if err := ctx.ShouldBindJSON(&logInUserData); err != nil {
+			log.Println("Failed to bind json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		// Establishes a gRPC connection.
+		// Establishing a gRPC connection
 		conn, err := utils.GRPCClient(os.Getenv("GRPC_USER_HOST"))
 		if err != nil {
 			log.Println("Failed to dial", err)
@@ -97,10 +97,10 @@ func LogIn() gin.HandlerFunc {
 		c, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		// Sends a LogInRequest with user details to the gRPC service for login.
+		// Sending a LogInRequest with user details to the gRPC service for login
 		response, err := client.LogIn(c, &pb.LogInRequest{
-			PhoneNumber: logInUser.PhoneNumber,
-			Password: logInUser.Password,
+			PhoneNumber: logInUserData.PhoneNumber,
+			Password: logInUserData.Password,
 		})
 
 		// If signup fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
@@ -116,16 +116,16 @@ func LogIn() gin.HandlerFunc {
 
 func UpdateUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		updateUser := User{}
+		userData := UserData{}
 
-		// Binds the incoming request to update user.
-		if err := ctx.ShouldBindJSON(&updateUser); err != nil {
-			log.Println("Failed to binding json", err)
+		// Binding the incoming request to update user
+		if err := ctx.ShouldBindJSON(&userData); err != nil {
+			log.Println("Failed to bind json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		// Establishes a gRPC connection.
+		// Establishing a gRPC connection
 		conn, err := utils.GRPCClient(os.Getenv("GRPC_USER_HOST"))
 		if err != nil {
 			log.Println("Failed to dial", err)
@@ -138,12 +138,12 @@ func UpdateUser() gin.HandlerFunc {
 		c, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		// Sends a UpdateUserRequest with user details to the gRPC service for updating user.
+		// Sending a UpdateUserRequest with user details to the gRPC service for updating user
 		response, err := client.UpdateUser(c, &pb.UpdateUserRequest{
-			Name: updateUser.Name,
-			PhoneNumber: updateUser.PhoneNumber,
-			Email: updateUser.Email,
-			Password: updateUser.Password,
+			Name: userData.Name,
+			PhoneNumber: userData.PhoneNumber,
+			Email: userData.Email,
+			Password: userData.Password,
 		})
 
 		// If updating user fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
@@ -161,7 +161,7 @@ func GetUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		userId := ctx.GetUint64("user_id")
 
-		// Establishes a gRPC connection.
+		// Establishing a gRPC connection
 		conn, err := utils.GRPCClient(os.Getenv("GRPC_USER_HOST"))
 		if err != nil {
 			log.Println("Failed to dial", err)
@@ -174,7 +174,7 @@ func GetUser() gin.HandlerFunc {
 		c, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		// Sends a GetUserRequest to the gRPC service for getting user.
+		// Sending a GetUserRequest to the gRPC service for getting user
 		response, err := client.GetUser(c, &pb.GetUserRequest{
 			Id: userId,
 		})
@@ -190,18 +190,18 @@ func GetUser() gin.HandlerFunc {
 	}
 }
 
-func Verify() gin.HandlerFunc {
+func AuthenticateUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		verifyUser := VerifyUser{}
+		authenticateUserData := AuthenticateUserData{}
 
-		// Binds the incoming request to verify user.
-		if err := ctx.ShouldBindJSON(&verifyUser); err != nil {
-			log.Println("Failed to binding", err)
+		// Binding the incoming request to verify user.
+		if err := ctx.ShouldBindJSON(&authenticateUserData); err != nil {
+			log.Println("Failed to bind json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		// Establishes a gRPC connection.
+		// Establishing a gRPC connection
 		conn, err := utils.GRPCClient(os.Getenv("GRPC_USER_HOST"))
 		if err != nil {
 			log.Println("Failed to dial", err)
@@ -214,14 +214,14 @@ func Verify() gin.HandlerFunc {
 		c, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		// Sends a VerifyRequest with user token to the gRPC service for validation.
-		response, err := client.Verify(c, &pb.VerifyRequest{
-			Token: verifyUser.Token,
+		// Sending an AuthenticateUserRequest with user token to the gRPC service for authentication
+		response, err := client.AuthenticateUser(c, &pb.AuthenticateUserRequest{
+			Token: authenticateUserData.Token,
 		})
 
-		// If verifying user fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
+		// If authentication fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
 		if err != nil {
-			log.Println("Failed to verify", err)
+			log.Println("Failed to authenticate", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}

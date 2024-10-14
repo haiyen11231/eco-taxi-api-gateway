@@ -6,6 +6,14 @@ option go_package = "/internal/grpc/pb";
 
 import "google/protobuf/timestamp.proto";
 
+service UserService {
+    rpc SignUp (SignUpRequest) returns (SignUpResponse);
+    rpc LogIn (LogInRequest) returns (LogInResponse);
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
+    rpc GetUser (GetUserRequest) returns (GetUserResponse);
+    rpc AuthenticateUser (AuthenticateUserRequest) returns (AuthenticateUserResponse);
+}
+
 message User {
     uint64 id = 1;
     string name = 2;
@@ -13,17 +21,6 @@ message User {
     string email = 4;
     string password = 5;
     double distance_travelled = 6;
-    google.protobuf.Timestamp created_at = 7;
-    google.protobuf.Timestamp updated_at = 8;
-    google.protobuf.Timestamp deleted_at = 9;
-}
-
-service UserService {
-    rpc SignUp (SignUpRequest) returns (SignUpResponse);
-    rpc LogIn (LogInRequest) returns (LogInResponse);
-    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
-    rpc GetUser (GetUserRequest) returns (GetUserResponse);
-    rpc Verify (VerifyRequest) returns (VerifyResponse);
 }
 
 message SignUpRequest {
@@ -54,8 +51,7 @@ message UpdateUserRequest {
 }
   
 message UpdateUserResponse {
-    int32 status_code = 1;
-    string message = 2;
+    string message = 1;
 }
 
 message GetUserRequest {
@@ -63,18 +59,14 @@ message GetUserRequest {
 }
   
 message GetUserResponse {
-    string name = 1;
-    string phone_number = 2;
-    string email = 3;
-    string password = 4;
-    double distance_travelled = 5;
+    User user = 1;
 }
   
-message VerifyRequest {
+message AuthenticateUserRequest {
     string token = 1;
 }
   
-message VerifyResponse {
+message AuthenticateUserResponse {
     bool valid = 1;
     string message = 2;
     uint64 user_id = 3;

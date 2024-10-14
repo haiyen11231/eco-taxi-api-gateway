@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_SignUp_FullMethodName     = "/user_service.UserService/SignUp"
-	UserService_LogIn_FullMethodName      = "/user_service.UserService/LogIn"
-	UserService_UpdateUser_FullMethodName = "/user_service.UserService/UpdateUser"
-	UserService_GetUser_FullMethodName    = "/user_service.UserService/GetUser"
-	UserService_Verify_FullMethodName     = "/user_service.UserService/Verify"
+	UserService_SignUp_FullMethodName           = "/user_service.UserService/SignUp"
+	UserService_LogIn_FullMethodName            = "/user_service.UserService/LogIn"
+	UserService_UpdateUser_FullMethodName       = "/user_service.UserService/UpdateUser"
+	UserService_GetUser_FullMethodName          = "/user_service.UserService/GetUser"
+	UserService_AuthenticateUser_FullMethodName = "/user_service.UserService/AuthenticateUser"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -34,7 +34,7 @@ type UserServiceClient interface {
 	LogIn(ctx context.Context, in *LogInRequest, opts ...grpc.CallOption) (*LogInResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*GetUserResponse, error)
-	Verify(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*VerifyResponse, error)
+	AuthenticateUser(ctx context.Context, in *AuthenticateUserRequest, opts ...grpc.CallOption) (*AuthenticateUserResponse, error)
 }
 
 type userServiceClient struct {
@@ -85,10 +85,10 @@ func (c *userServiceClient) GetUser(ctx context.Context, in *GetUserRequest, opt
 	return out, nil
 }
 
-func (c *userServiceClient) Verify(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*VerifyResponse, error) {
+func (c *userServiceClient) AuthenticateUser(ctx context.Context, in *AuthenticateUserRequest, opts ...grpc.CallOption) (*AuthenticateUserResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(VerifyResponse)
-	err := c.cc.Invoke(ctx, UserService_Verify_FullMethodName, in, out, cOpts...)
+	out := new(AuthenticateUserResponse)
+	err := c.cc.Invoke(ctx, UserService_AuthenticateUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ type UserServiceServer interface {
 	LogIn(context.Context, *LogInRequest) (*LogInResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error)
-	Verify(context.Context, *VerifyRequest) (*VerifyResponse, error)
+	AuthenticateUser(context.Context, *AuthenticateUserRequest) (*AuthenticateUserResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -126,8 +126,8 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*GetUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUser not implemented")
 }
-func (UnimplementedUserServiceServer) Verify(context.Context, *VerifyRequest) (*VerifyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Verify not implemented")
+func (UnimplementedUserServiceServer) AuthenticateUser(context.Context, *AuthenticateUserRequest) (*AuthenticateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AuthenticateUser not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -222,20 +222,20 @@ func _UserService_GetUser_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_Verify_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyRequest)
+func _UserService_AuthenticateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthenticateUserRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).Verify(ctx, in)
+		return srv.(UserServiceServer).AuthenticateUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_Verify_FullMethodName,
+		FullMethod: UserService_AuthenticateUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Verify(ctx, req.(*VerifyRequest))
+		return srv.(UserServiceServer).AuthenticateUser(ctx, req.(*AuthenticateUserRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -264,8 +264,8 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_GetUser_Handler,
 		},
 		{
-			MethodName: "Verify",
-			Handler:    _UserService_Verify_Handler,
+			MethodName: "AuthenticateUser",
+			Handler:    _UserService_AuthenticateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

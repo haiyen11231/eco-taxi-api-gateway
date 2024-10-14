@@ -48,7 +48,7 @@ eco-taxi-api-gateway/
 │   │   └── user_service_handler.go
 │   │
 │   ├── middleware/
-│   │   └── verify_token.go
+│   │   └── auth_user.go
 │   │
 │   └── utils/
 │       ├── grpc_client_connect.go

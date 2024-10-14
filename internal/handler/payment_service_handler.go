@@ -71,7 +71,7 @@ func GetCards() gin.HandlerFunc {
 		}
 
 		cards := map[string]any{}
-		err = json.Unmarshal(b, &cards)
+		json.Unmarshal(b, &cards)
 
 		if cards["result"] == nil {
 			cards["result"] = []interface{}{}

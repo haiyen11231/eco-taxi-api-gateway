@@ -14,7 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func VerifyToken (ctx *gin.Context) {
+func AuthenticateUser (ctx *gin.Context) {
 	// Extracting and validating the Bearer token from incoming requests
 	token := strings.TrimPrefix(ctx.GetHeader("Authorization"), "Bearer ")
 
@@ -24,7 +24,7 @@ func VerifyToken (ctx *gin.Context) {
 		return
 	}
 
-	// Using a gRPC call to verify the token with user-service
+	// Establishing a gRPC connection
 	conn, err := utils.GRPCClient(os.Getenv("GRPC_USER_HOST"))
 	if err != nil {
 		log.Println("Error Connection to GRPC", err)
@@ -37,12 +37,14 @@ func VerifyToken (ctx *gin.Context) {
 	c, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	response, err := client.Verify(c, &pb.VerifyRequest{
+	// Sending an AuthenticateUserRequest with user token to the gRPC service for authentication
+	response, err := client.AuthenticateUser(c, &pb.AuthenticateUserRequest{
 		Token: token,
 	})
 	
+	// If authentication fails, logs the error and returns a 401 Unauthorized error. On success, it sends a success response.
 	if err != nil {
-		log.Println("Error Verify", err)
+		log.Println("Failed to authenticate", err)
 		utils.ResponseError(ctx, http.StatusUnauthorized, "Unauthorized!")
 		return
 	}

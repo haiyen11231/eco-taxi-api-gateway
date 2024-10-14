@@ -225,19 +225,11 @@ func GetBookingHistory() gin.HandlerFunc {
 		
 		userId := ctx.GetUint64("user_id")
 
-		// Extract headers for filtering
-        paymentMethodsHeader := ctx.GetHeader("payment-method")
         bookingStatusHeader := ctx.GetHeader("booking-status")
         orderAscHeader := ctx.GetHeader("order-asc")
 
         // Default values
-        paymentMethods := []string{"cash", "credit_card"} // Default to both payment methods
         bookingStatuses := []pb.BookingStatus{pb.BookingStatus_BOOKING_INCOMPLETED, pb.BookingStatus_BOOKING_COMPLETED, pb.BookingStatus_BOOKING_CANCELED} // Default to all booking statuses
-
-        // Parse headers for payment methods
-        if paymentMethodsHeader != "" {
-            paymentMethods = strings.Split(paymentMethodsHeader, ",")
-        }
 
         // Parse headers for booking statuses
         if bookingStatusHeader != "" {
@@ -270,7 +262,6 @@ func GetBookingHistory() gin.HandlerFunc {
 			Page: uint64(page),
 			Limit: uint64(limit),
 			UserId: userId,
-			PaymentMethods: paymentMethods,
 			BookingStatuses: bookingStatuses,
 			OrderAsc: orderAsc,
 		})
@@ -291,7 +282,7 @@ func GetBookingHistory() gin.HandlerFunc {
 		}
 
 		bookings := map[string]any{}
-		err = json.Unmarshal(b, &bookings)
+		json.Unmarshal(b, &bookings)
  
 		if bookings["result"] == nil {
 			bookings["result"] = []interface{}{}
@@ -324,115 +315,3 @@ func bookingStatusesFromStrings(statuses []string) []pb.BookingStatus {
     }
     return enumStatuses
 }
-// // for filtering
-//   bool cash_payment = 3; 
-//   bool card_payment = 4;
-//   bool is_incompleted = 5;
-//   bool is_completed = 6;
-//   bool is_cancelled = 7;
-//   bool sort_by_date = 8; //nearest booking first,...
-//   bool sort_by_payment_method = 9; //trips paid by cash first, then card
-//   bool sort_by_booking_status = 10; //trip are in incompleted first, then completed and cancelled
-
-// func GetAllProduct() gin.HandlerFunc {
-// 	return func(ctx *gin.Context) {
-// 		p := ctx.Query("page")
-// 		l := ctx.Query("limit")
-// 		if p == "" {
-// 			p = "1"
-// 		}
-// 		if l == "" {
-// 			l = "10"
-// 		}
-// 		page, err := strconv.Atoi(p)
-// 		if err != nil {
-// 			log.Println("Failed to convert query page", err)
-// 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-// 		limit, err := strconv.Atoi(l)
-// 		if err != nil {
-// 			log.Println("Failed to convert query limit", err)
-// 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-// 		conn, err := utils.GRPCClient(os.Getenv("GRPC_PRODUCT_HOST"))
-// 		if err != nil {
-// 			log.Println("Failed to dial", err)
-// 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-// 		defer conn.Close()
-
-// 		client := pb.NewProductServiceClient(conn)
-// 		c, cancel := context.WithTimeout(context.Background(), time.Second)
-// 		defer cancel()
-
-// 		response, err := client.GetAll(c, &pb.GetProductsRequest{
-// 			Page:  uint64(page),
-// 			Limit: uint64(limit),
-// 		})
-// 		if err != nil {
-// 			log.Println("Failed to get all", err)
-// 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-
-// 		b, err := protojson.Marshal(response)
-// 		if err != nil {
-// 			log.Println("Failed to marshal response", err)
-// 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-
-// 		products := map[string]any{}
-// 		err = json.Unmarshal(b, &products)
-
-// 		if products["result"] == nil {
-// 			products["result"] = []interface{}{}
-// 		}
-
-// 		utils.ResponseSuccess(ctx, http.StatusAccepted, products)
-// 	}
-// }
-
-// func GetProduct() gin.HandlerFunc {
-// 	return func(ctx *gin.Context) {
-// 		id, err := strconv.Atoi(ctx.Params.ByName("id"))
-// 		if err != nil {
-// 			log.Println("Failed to convert params", err)
-// 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-// 		conn, err := utils.GRPCClient(os.Getenv("GRPC_PRODUCT_HOST"))
-// 		if err != nil {
-// 			log.Println("Failed to dial", err)
-// 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-// 		defer conn.Close()
-
-// 		client := pb.NewProductServiceClient(conn)
-// 		c, cancel := context.WithTimeout(context.Background(), time.Second)
-// 		defer cancel()
-
-// 		response, err := client.GetProduct(c, &pb.GetProductRequest{Id: uint64(id)})
-// 		if err != nil {
-// 			log.Println("Failed to get product", err)
-// 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-
-// 		b, err := protojson.Marshal(response)
-// 		if err != nil {
-// 			log.Println("Failed to marshal response", err)
-// 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-// 			return
-// 		}
-
-// 		products := map[string]interface{}{}
-// 		err = json.Unmarshal(b, &products)
-
-// 		utils.ResponseSuccess(ctx, http.StatusAccepted, products)
-// 	}
-// }

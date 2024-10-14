@@ -36,9 +36,6 @@ message TripBooking {
   google.protobuf.Timestamp date = 7;
   BookingStatus booking_status = 8;
   uint64 userId = 9;
-  google.protobuf.Timestamp created_at = 10;
-  google.protobuf.Timestamp updated_at = 11;
-  google.protobuf.Timestamp deleted_at = 12;
 }
 
 message SearchTripPreviewRequest {
@@ -99,11 +96,10 @@ message GetBookingHistoryRequest {
   uint64 limit = 2;
   uint64 userId = 3;
   // Filters
-  repeated string payment_methods = 4; // List of payment methods to filter by
-  repeated BookingStatus booking_statuses = 5; // List of booking statuses to filter by
+  repeated BookingStatus booking_statuses = 4; // List of booking statuses to filter by
   
   // Sorting
-  bool order_asc = 6; // If true, order by ascending date; if false, order by descending
+  bool order_asc = 5; // If true, order by ascending date; if false, order by descending
 }
 
 message GetBookingHistoryResponse {
