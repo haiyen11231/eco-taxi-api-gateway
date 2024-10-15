@@ -21,9 +21,9 @@ message Pagination {
 }
 
 enum BookingStatus {
-  BOOKING_INCOMPLETED = 0;        // The booking has been confirmed but not completed
-  BOOKING_COMPLETED = 1;          // The booking has been completed
-  BOOKING_CANCELED = 2;           // The booking has been canceled
+  INCOMPLETED = 0;        // The booking has been confirmed but not completed
+  COMPLETED = 1;          // The booking has been completed
+  CANCELED = 2;           // The booking has been canceled
 }
 
 message TripBooking {

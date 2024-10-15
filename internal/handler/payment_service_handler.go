@@ -36,9 +36,10 @@ type UpdateCardData struct {
   
 func GetCards() gin.HandlerFunc {
     return func(ctx *gin.Context) {
+		// Retrieving the user_id from the context, set previously in middleware
         userId := ctx.GetUint64("user_id")
     
-        // Establishes a gRPC connection.
+        // Establishing a gRPC connection
         conn, err := utils.GRPCClient(os.Getenv("GRPC_PAYMENT_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
@@ -47,11 +48,14 @@ func GetCards() gin.HandlerFunc {
         }
         defer conn.Close()
     
+		// Creating a new PaymentService gRPC client from the connection
         client := pb.NewPaymentServiceClient(conn)
+
+		// Setting a timeout for the gRPC request to avoid long-running calls
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
     
-        // Sends a GetCardsRequest to the gRPC service for getting cards.
+        // Sending a GetCardsRequest to the gRPC service for getting cards
         response, err := client.GetCards(c, &pb.GetCardsRequest{
             UserId: userId,
         })
@@ -63,6 +67,7 @@ func GetCards() gin.HandlerFunc {
             return
         }
     
+		// Marshalling the gRPC response into JSON format
 		b, err := protojson.Marshal(response)
 		if err != nil {
 			log.Println("Failed to marshal response", err)
@@ -70,9 +75,11 @@ func GetCards() gin.HandlerFunc {
 			return
 		}
 
+		// Converting the marshalled JSON data to a generic map for further processing
 		cards := map[string]any{}
 		json.Unmarshal(b, &cards)
 
+		// If the "result" key in the response is empty, initializes it as an empty array.
 		if cards["result"] == nil {
 			cards["result"] = []interface{}{}
 		}
@@ -86,14 +93,14 @@ func CreateCard() gin.HandlerFunc {
 		createCard := CreateCardData{}
 		userId := ctx.GetUint64("user_id")
 
-        // Binds the incoming request to create card.
+        // Binding the incoming request to create card
 		if err := ctx.ShouldBindJSON(&createCard); err != nil {
-			log.Println("Failed binding json", err)
+			log.Println("Failed to bind json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		// Establishes a gRPC connection.
+		// Establishing a gRPC connection
         conn, err := utils.GRPCClient(os.Getenv("GRPC_PAYMENT_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
@@ -106,14 +113,14 @@ func CreateCard() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
 
-        // Sends a GetCardsRequest to the gRPC service for getting cards.
+        // Sending a GetCardsRequest to the gRPC service for getting cards
 		response, err := client.CreateCard(c, &pb.CreateCardRequest{
+			UserId: userId,
 			CardNumber: createCard.CardNumber,
             CardHolder: createCard.CardHolder,
             ExpiryDate: createCard.ExpiryDate,
             Cvv: createCard.Cvv,
             IsDefault: createCard.IsDefault,
-            UserId: userId,
 		})
 
         // If creating card fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
@@ -129,6 +136,7 @@ func CreateCard() gin.HandlerFunc {
 
 func UpdateCard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		// Retrieving the card ID from the URL parameters and converting it to an integer.
 		id, err := strconv.Atoi(ctx.Params.ByName("id"))
 		if err != nil {
 			log.Println("Failed to convert params", err)
@@ -139,14 +147,14 @@ func UpdateCard() gin.HandlerFunc {
 		updateCard := UpdateCardData{}
 		userId := ctx.GetUint64("user_id")
 
-        // Binds the incoming request to update card.
+        // Binding the incoming request to update card
 		if err := ctx.ShouldBindJSON(&updateCard); err != nil {
-			log.Println("Failed binding json", err)
+			log.Println("Failed to bind json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		// Establishes a gRPC connection.
+		// Establishing a gRPC connection
         conn, err := utils.GRPCClient(os.Getenv("GRPC_PAYMENT_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
@@ -159,7 +167,7 @@ func UpdateCard() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
 
-        // Sends a UpdateCardRequest to the gRPC service for updating card.
+        // Sending a UpdateCardRequest to the gRPC service for updating card
 		response, err := client.UpdatecCard(c, &pb.UpdateCardRequest{
 			Id:          uint64(id),
 			CardNumber: updateCard.CardNumber,
@@ -183,6 +191,7 @@ func UpdateCard() gin.HandlerFunc {
 
 func DeleteCard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		// Retrieving the card ID from the URL parameters and converting it to an integer.
 		id, err := strconv.Atoi(ctx.Params.ByName("id"))
 		if err != nil {
 			log.Println("Failed to convert params", err)
@@ -190,7 +199,9 @@ func DeleteCard() gin.HandlerFunc {
 			return
 		}
 
-		// Establishes a gRPC connection.
+		userId := ctx.GetUint64("user_id")
+
+		// Establishing a gRPC connection.
         conn, err := utils.GRPCClient(os.Getenv("GRPC_PAYMENT_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
@@ -203,10 +214,10 @@ func DeleteCard() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
 
-        // Sends a DeleteCardRequest to the gRPC service for deleting card.
+        // Sending a DeleteCardRequest to the gRPC service for deleting card
 		response, err := client.DeleteCard(c, &pb.DeleteCardRequest{
 			Id:     uint64(id),
-			UserId: ctx.GetUint64("user_id"),
+			UserId: userId,
 		})
 
 		// If deleting card fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.

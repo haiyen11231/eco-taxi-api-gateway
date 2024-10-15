@@ -4,7 +4,7 @@ package user_service;
 
 option go_package = "/internal/grpc/pb";
 
-import "google/protobuf/timestamp.proto";
+// import "google/protobuf/timestamp.proto";
 
 service UserService {
     rpc SignUp (SignUpRequest) returns (SignUpResponse);
@@ -44,10 +44,11 @@ message LogInResponse {
 }
 
 message UpdateUserRequest {
-    string name = 1;
-    string phone_number = 2;
-    string email = 3;
-    string password = 4;
+    uint64 id = 1;
+    string name = 2;
+    string phone_number = 3;
+    string email = 4;
+    string password = 5;
 }
   
 message UpdateUserResponse {

@@ -14,12 +14,13 @@ service PaymentService {
 }
 
 message Card {
-    uint64 id = 1;
-    string card_number = 2;
-    string card_holder = 3;
-    google.protobuf.Timestamp expiry_date = 4;
-    uint64 cvv = 5;
-    bool is_default = 6;
+  uint64 id = 1;
+  string card_number = 2;
+  string card_holder = 3;
+  google.protobuf.Timestamp expiry_date = 4;
+  uint64 cvv = 5;
+  bool is_default = 6;
+  uint64 userId = 7;
 }
 
 message GetCardsRequest {
@@ -31,30 +32,30 @@ message GetCardsResponse {
 }
 
 message CreateCardRequest {
-    string card_number = 1;
-    string card_holder = 2;
-    google.protobuf.Timestamp expiry_date = 3;
-    uint64 cvv = 4;
-    bool is_default = 5;
-    uint64 userId = 6;
+  uint64 userId = 6;
+  string card_number = 1;
+  string card_holder = 2;
+  google.protobuf.Timestamp expiry_date = 3;
+  uint64 cvv = 4;
+  bool is_default = 5;
 }
 
 message CreateCardResponse {
-    string result = 1;
+  string result = 1;
 }
 
 message UpdateCardRequest {
-    uint64 id = 1;
-    string card_number = 2;
-    string card_holder = 3;
-    google.protobuf.Timestamp expiry_date = 4;
-    uint64 cvv = 5;
-    bool is_default = 6;
-    uint64 userId = 7;
+  uint64 id = 1;
+  string card_number = 2;
+  string card_holder = 3;
+  google.protobuf.Timestamp expiry_date = 4;
+  uint64 cvv = 5;
+  bool is_default = 6;
+  uint64 userId = 7;
 }
 
 message UpdateCardResponse {
-    string result = 1;
+  string result = 1;
 }
 
 message DeleteCardRequest {

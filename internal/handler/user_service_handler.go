@@ -116,6 +116,9 @@ func LogIn() gin.HandlerFunc {
 
 func UpdateUser() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		// Retrieving the user_id from the context, set previously in middleware
+        userId := ctx.GetUint64("user_id")
+
 		userData := UserData{}
 
 		// Binding the incoming request to update user
@@ -140,6 +143,7 @@ func UpdateUser() gin.HandlerFunc {
 
 		// Sending a UpdateUserRequest with user details to the gRPC service for updating user
 		response, err := client.UpdateUser(c, &pb.UpdateUserRequest{
+			Id: userId,
 			Name: userData.Name,
 			PhoneNumber: userData.PhoneNumber,
 			Email: userData.Email,
