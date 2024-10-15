@@ -1,6 +1,6 @@
-# Golang gRPC Microservices
+# EcoTaxi - API Gateway
 
-This is a sample implementation of a microservices architecture using [gRPC](https://grpc.io/docs/languages/go/quickstart/). The architecture consists of three services: `user-service`, `trip-service` and `payment-service` built with [gin](https://github.com/gin-gonic/gin) and [gorm](https://gorm.io/). Each service has its own database connector, and the services are accessed via `api-gateway` that accepts HTTP requests.
+This is a API Gateway of EcoTaxi Project using [gRPC](https://grpc.io/docs/languages/go/quickstart/) to communicate with other services: `user-service`, `trip-service` and `payment-service` built with [gin](https://github.com/gin-gonic/gin) and [gorm](https://gorm.io/). Each service has its own database connector, and the services are accessed via `api-gateway` that accepts HTTP requests.
 
 ## Postman Collection
 
@@ -12,8 +12,8 @@ To build and run the services, follow these steps:
 
 1.  Clone this repository.
 2.  Navigate to the `eco-taxi-api-gateway` directory.
-3.  Run `make up_build` to build the Docker images for the services.
-4.  Server will be running at http://localhost:8081/
+<!-- 3.  Run `make up_build` to build the Docker images for the services.
+3.  Server will be running at http://localhost:8081/ -->
 
 Once the services are running, you can test them with Postman by sending HTTP requests to the gateway service.
 
@@ -51,7 +51,7 @@ eco-taxi-api-gateway/
 │   │   └── auth_user.go
 │   │
 │   └── utils/
-│       ├── grpc_client_connect.go
+│       ├── grpc_client.go
 │       └── response.go
 │
 ├── app.env
@@ -78,7 +78,5 @@ graph TD
     Payment-Service---Payment-MySQL[(MySQL)]
 
     Trip-Service---Trip-MySQL[(MySQL)]
-
-    Trip-Service---|gRPC|Payment-Service
 
 ```

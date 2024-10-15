@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	TripService_SearchTripPreview_FullMethodName   = "/trip_service.TripService/SearchTripPreview"
-	TripService_ConfirmBooking_FullMethodName      = "/trip_service.TripService/ConfirmBooking"
-	TripService_UpdateBookingStatus_FullMethodName = "/trip_service.TripService/UpdateBookingStatus"
-	TripService_GetBookingHistory_FullMethodName   = "/trip_service.TripService/GetBookingHistory"
+	TripService_SearchTripPreview_FullMethodName     = "/trip_service.TripService/SearchTripPreview"
+	TripService_ConfirmBooking_FullMethodName        = "/trip_service.TripService/ConfirmBooking"
+	TripService_GetIncompletedBooking_FullMethodName = "/trip_service.TripService/GetIncompletedBooking"
+	TripService_UpdateBookingStatus_FullMethodName   = "/trip_service.TripService/UpdateBookingStatus"
+	TripService_GetBookingHistory_FullMethodName     = "/trip_service.TripService/GetBookingHistory"
 )
 
 // TripServiceClient is the client API for TripService service.
@@ -31,6 +32,7 @@ const (
 type TripServiceClient interface {
 	SearchTripPreview(ctx context.Context, in *SearchTripPreviewRequest, opts ...grpc.CallOption) (*SearchTripPreviewResponse, error)
 	ConfirmBooking(ctx context.Context, in *ConfirmBookingRequest, opts ...grpc.CallOption) (*ConfirmBookingResponse, error)
+	GetIncompletedBooking(ctx context.Context, in *GetIncompletedBookingRequest, opts ...grpc.CallOption) (*GetIncompletedBookingResponse, error)
 	UpdateBookingStatus(ctx context.Context, in *UpdateBookingRequest, opts ...grpc.CallOption) (*UpdateBookingResponse, error)
 	GetBookingHistory(ctx context.Context, in *GetBookingHistoryRequest, opts ...grpc.CallOption) (*GetBookingHistoryResponse, error)
 }
@@ -63,6 +65,16 @@ func (c *tripServiceClient) ConfirmBooking(ctx context.Context, in *ConfirmBooki
 	return out, nil
 }
 
+func (c *tripServiceClient) GetIncompletedBooking(ctx context.Context, in *GetIncompletedBookingRequest, opts ...grpc.CallOption) (*GetIncompletedBookingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetIncompletedBookingResponse)
+	err := c.cc.Invoke(ctx, TripService_GetIncompletedBooking_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *tripServiceClient) UpdateBookingStatus(ctx context.Context, in *UpdateBookingRequest, opts ...grpc.CallOption) (*UpdateBookingResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateBookingResponse)
@@ -89,6 +101,7 @@ func (c *tripServiceClient) GetBookingHistory(ctx context.Context, in *GetBookin
 type TripServiceServer interface {
 	SearchTripPreview(context.Context, *SearchTripPreviewRequest) (*SearchTripPreviewResponse, error)
 	ConfirmBooking(context.Context, *ConfirmBookingRequest) (*ConfirmBookingResponse, error)
+	GetIncompletedBooking(context.Context, *GetIncompletedBookingRequest) (*GetIncompletedBookingResponse, error)
 	UpdateBookingStatus(context.Context, *UpdateBookingRequest) (*UpdateBookingResponse, error)
 	GetBookingHistory(context.Context, *GetBookingHistoryRequest) (*GetBookingHistoryResponse, error)
 	mustEmbedUnimplementedTripServiceServer()
@@ -106,6 +119,9 @@ func (UnimplementedTripServiceServer) SearchTripPreview(context.Context, *Search
 }
 func (UnimplementedTripServiceServer) ConfirmBooking(context.Context, *ConfirmBookingRequest) (*ConfirmBookingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConfirmBooking not implemented")
+}
+func (UnimplementedTripServiceServer) GetIncompletedBooking(context.Context, *GetIncompletedBookingRequest) (*GetIncompletedBookingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIncompletedBooking not implemented")
 }
 func (UnimplementedTripServiceServer) UpdateBookingStatus(context.Context, *UpdateBookingRequest) (*UpdateBookingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateBookingStatus not implemented")
@@ -170,6 +186,24 @@ func _TripService_ConfirmBooking_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TripService_GetIncompletedBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetIncompletedBookingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TripServiceServer).GetIncompletedBooking(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TripService_GetIncompletedBooking_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TripServiceServer).GetIncompletedBooking(ctx, req.(*GetIncompletedBookingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _TripService_UpdateBookingStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateBookingRequest)
 	if err := dec(in); err != nil {
@@ -220,6 +254,10 @@ var TripService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ConfirmBooking",
 			Handler:    _TripService_ConfirmBooking_Handler,
+		},
+		{
+			MethodName: "GetIncompletedBooking",
+			Handler:    _TripService_GetIncompletedBooking_Handler,
 		},
 		{
 			MethodName: "UpdateBookingStatus",

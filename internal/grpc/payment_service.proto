@@ -20,11 +20,11 @@ message Card {
   google.protobuf.Timestamp expiry_date = 4;
   uint64 cvv = 5;
   bool is_default = 6;
-  uint64 userId = 7;
+  uint64 user_id = 7;
 }
 
 message GetCardsRequest {
-  uint64 userId = 1;
+  uint64 user_id = 1;
 }
 
 message GetCardsResponse {
@@ -32,7 +32,7 @@ message GetCardsResponse {
 }
 
 message CreateCardRequest {
-  uint64 userId = 6;
+  uint64 user_id = 6;
   string card_number = 1;
   string card_holder = 2;
   google.protobuf.Timestamp expiry_date = 3;
@@ -51,7 +51,7 @@ message UpdateCardRequest {
   google.protobuf.Timestamp expiry_date = 4;
   uint64 cvv = 5;
   bool is_default = 6;
-  uint64 userId = 7;
+  uint64 user_id = 7;
 }
 
 message UpdateCardResponse {
@@ -60,7 +60,7 @@ message UpdateCardResponse {
 
 message DeleteCardRequest {
   uint64 id = 1;
-  uint64 userId = 2;
+  uint64 user_id = 2;
 }
 
 message DeleteCardResponse {

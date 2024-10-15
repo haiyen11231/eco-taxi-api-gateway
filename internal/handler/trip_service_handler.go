@@ -30,36 +30,39 @@ type SearchTripPreviewData struct {
 }
 
 type ConfirmBookingData struct {
-	Pickup               string                 `json:"pickup" binding:"required"`
-	Destination          string                 `json:"destination" binding:"required"`
-	Distance             float64                `json:"distance" binding:"required"`
-	Fare                 float64                `json:"fare" binding:"required"`
-	EstimatedArrivalTime *timestamppb.Timestamp `json:"estimated_arrival_time" binding:"required"`
-	EstimatedWaitingTime int64                  `json:"estimated_waiting_time" binding:"required"`
-	NumOfAvailableTaxis  int64                  `json:"num_of_available_taxis" binding:"required"`
-	NearestTaxiLongitude float64                `json:"nearest_taxi_longitude" binding:"required"`
-	NearestTaxiLatitude  float64                `json:"nearest_taxi_latitude" binding:"required"`
-	DefaultPaymentMethod string                 `json:"default_payment_method" binding:"required"`  
+	Pickup               string                     `json:"pickup" binding:"required"`
+	Destination          string                     `json:"destination" binding:"required"`
+	Distance             float64                    `json:"distance" binding:"required"`
+	Fare                 float64                    `json:"fare" binding:"required"`
+	CardNumber               string                 `json:"card_number" binding:"required"`
+	EstimatedArrivalDateTime *timestamppb.Timestamp `json:"estimated_arrival_date_time" binding:"required"`
+	EstimatedWaitingTime int64                      `json:"estimated_waiting_time" binding:"required"`
+	BookingStatus            pb.BookingStatus       `json:"booking_status" binding:"required"`
 }
 
 type UpdateBookingStatusData struct {
-	EstimatedArrivalTime *timestamppb.Timestamp `json:"estimated_arrival_time" binding:"required"`
-	EstimatedWaitingTime int64                  `json:"estimated_waiting_time" binding:"required"`
-	BookingStatus        pb.BookingStatus          `json:"booking_status"`
+	Pickup                   string                 `json:"pickup"`
+	Destination              string                 `json:"destination"`
+	Distance                 float64                `json:"distance"`
+	Fare                     float64                `json:"fare"`
+	CardNumber               string                 `json:"card_number"`
+	EstimatedArrivalDateTime *timestamppb.Timestamp `json:"estimated_arrival_date_time"`
+	EstimatedWaitingTime     int64                  `json:"estimated_waiting_time" binding:"required"`
+	BookingStatus            pb.BookingStatus       `json:"booking_status" binding:"required"` 
 }
 
 func SearchTripPreview() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		searchTripPreview := SearchTripPreviewData{}
 
-		// Binding the incoming request to search trip preview.
+		// Binding the incoming request to search trip preview
 		if err := ctx.ShouldBindJSON(&searchTripPreview); err != nil {
-			log.Println("Failed binding json", err)
+			log.Println("Failed to bind json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		// Establishing a gRPC connection.
+		// Establishing a gRPC connection
         conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
@@ -72,7 +75,7 @@ func SearchTripPreview() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
     
-        // Sending a SearchTripPreviewRequest to the gRPC service for searching trip preview.
+        // Sending a SearchTripPreviewRequest to the gRPC service for searching trip preview
 		response, err := client.SearchTripPreview(c, &pb.SearchTripPreviewRequest{
 			Pickup: searchTripPreview.Pickup,
 			Destination: searchTripPreview.Destination,
@@ -95,14 +98,14 @@ func ConfirmBooking() gin.HandlerFunc {
 		confirmBooking := ConfirmBookingData{}
 		userId := ctx.GetUint64("user_id")
 
-		// Binding the incoming request to confirm booking.
+		// Binding the incoming request to confirm booking
 		if err := ctx.ShouldBindJSON(&confirmBooking); err != nil {
-			log.Println("Failed binding json", err)
+			log.Println("Failed to bind json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 		
-		// Establishing a gRPC connection.
+		// Establishing a gRPC connection
         conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
@@ -115,18 +118,16 @@ func ConfirmBooking() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
     
-        // Sending a ConfirmBookingRequest to the gRPC service for confirming booking.
+        // Sending a ConfirmBookingRequest to the gRPC service for confirming booking
 		response, err := client.ConfirmBooking(c, &pb.ConfirmBookingRequest{
 			Pickup: confirmBooking.Pickup,
 			Destination: confirmBooking.Destination,
 			Distance: confirmBooking.Distance,
 			Fare: confirmBooking.Fare,
-			EstimatedArrivalTime: confirmBooking.EstimatedArrivalTime,
+			CardNumber: confirmBooking.CardNumber,
+			EstimatedArrivalDateTime: confirmBooking.EstimatedArrivalDateTime,
 			EstimatedWaitingTime: confirmBooking.EstimatedWaitingTime,
-			NumOfAvailableTaxis: confirmBooking.NumOfAvailableTaxis,
-			NearestTaxiLongitude: confirmBooking.NearestTaxiLongitude,
-			NearestTaxiLatitude: confirmBooking.NearestTaxiLongitude,
-			DefaultPaymentMethod: confirmBooking.DefaultPaymentMethod,
+			BookingStatus: confirmBooking.BookingStatus,
 			UserId: userId,
 		})
 
@@ -134,6 +135,41 @@ func ConfirmBooking() gin.HandlerFunc {
 		// If confirming booking fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
 		if err != nil {
 			log.Println("Failed to confirm booking", err)
+			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		utils.ResponseSuccess(ctx, http.StatusAccepted, response)
+	}
+}
+
+func GetIncompletedBooking() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		userId := ctx.GetUint64("user_id")
+		
+		// Establishing a gRPC connection
+        conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
+        if err != nil {
+            log.Println("Failed to dial", err)
+            utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
+            return
+        }
+        defer conn.Close()
+    
+        client := pb.NewTripServiceClient(conn)
+        c, cancel := context.WithTimeout(context.Background(), time.Second)
+        defer cancel()
+    
+        // Sending a GetIncompletedBookingRequest to the gRPC service for getting incompleted booking.
+		response, err := client.GetIncompletedBooking(c, &pb.GetIncompletedBookingRequest{
+			UserId: userId,
+			BookingStatus: pb.BookingStatus_INCOMPLETED,
+		})
+
+
+		// If getting incompleted booking fails, logs the error and returns a 400 Bad Request error. On success, it sends a success response with http.StatusAccepted.
+		if err != nil {
+			log.Println("Failed to get incompleted booking", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -154,14 +190,14 @@ func UpdateBookingStatus() gin.HandlerFunc {
 		updateBookingStatus := UpdateBookingStatusData{}
 		userId := ctx.GetUint64("user_id")
 
-		// Binding the incoming request to update booking status.
+		// Binding the incoming request to update booking status
 		if err := ctx.ShouldBindJSON(&updateBookingStatus); err != nil {
-			log.Println("Failed binding json", err)
+			log.Println("Failed to bind json", err)
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
 		
-		// Establishing a gRPC connection.
+		// Establishing a gRPC connection
         conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
@@ -174,10 +210,15 @@ func UpdateBookingStatus() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
     
-        // Sending a UpdateBookingRequest to the gRPC service for updating booking status.
+        // Sending a UpdateBookingRequest to the gRPC service for updating booking status
 		response, err := client.UpdateBookingStatus(c, &pb.UpdateBookingRequest{
 			Id: uint64(id),
-			EstimatedArrivalTime: updateBookingStatus.EstimatedArrivalTime,
+			Pickup: updateBookingStatus.Pickup,
+			Destination: updateBookingStatus.Destination,
+			Distance: updateBookingStatus.Distance,
+			Fare: updateBookingStatus.Fare,
+			CardNumber: updateBookingStatus.CardNumber,
+			EstimatedArrivalDateTime: updateBookingStatus.EstimatedArrivalDateTime,
 			EstimatedWaitingTime: updateBookingStatus.EstimatedWaitingTime,
 			BookingStatus: updateBookingStatus.BookingStatus,
 			UserId: userId,
@@ -197,7 +238,7 @@ func UpdateBookingStatus() gin.HandlerFunc {
 
 func GetBookingHistory() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// Retrieves query parameters
+		// Retrieving query parameters
 		p := ctx.Query("page")
 		l := ctx.Query("limit")
 
@@ -231,20 +272,20 @@ func GetBookingHistory() gin.HandlerFunc {
         // Default values
         bookingStatuses := []pb.BookingStatus{pb.BookingStatus_INCOMPLETED, pb.BookingStatus_COMPLETED, pb.BookingStatus_CANCELED} // Default to all booking statuses
 
-        // Parse headers for booking statuses
+        // Parsing headers for booking statuses
         if bookingStatusHeader != "" {
             statusArray := strings.Split(bookingStatusHeader, ",")
             bookingStatuses = bookingStatusesFromStrings(statusArray)
         }
 
-        // Set default value for orderAsc
+        // Setting default value for orderAsc
         orderAsc := true // Default to ascending order
         if orderAscHeader != "" {
             orderAsc = orderAscHeader == "true" // Convert to boolean if provided
         }
 
 		
-		// Establishing a gRPC connection.
+		// Establishing a gRPC connection
         conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
@@ -257,7 +298,7 @@ func GetBookingHistory() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
     
-        // Sending a GetBookingHistoryRequest to the gRPC service for getting booking history.
+        // Sending a GetBookingHistoryRequest to the gRPC service for getting booking history
 		response, err := client.GetBookingHistory(c, &pb.GetBookingHistoryRequest{
 			Page: uint64(page),
 			Limit: uint64(limit),

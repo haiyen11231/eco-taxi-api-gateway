@@ -9,6 +9,7 @@ import "google/protobuf/timestamp.proto";
 service TripService {
   rpc SearchTripPreview(SearchTripPreviewRequest) returns(SearchTripPreviewResponse);
   rpc ConfirmBooking(ConfirmBookingRequest) returns(ConfirmBookingResponse);
+  rpc GetIncompletedBooking(GetIncompletedBookingRequest) returns(GetIncompletedBookingResponse);
   rpc UpdateBookingStatus(UpdateBookingRequest) returns (UpdateBookingResponse);
   rpc GetBookingHistory(GetBookingHistoryRequest) returns (GetBookingHistoryResponse);
 }
@@ -32,10 +33,11 @@ message TripBooking {
   string destination = 3;
   double distance = 4;
   double fare = 5;
-  string payment_method = 6;
-  google.protobuf.Timestamp date = 7;
-  BookingStatus booking_status = 8;
-  uint64 userId = 9;
+  string card_number = 6;
+  google.protobuf.Timestamp estimated_arrival_date_time = 7;
+  int64 estimated_waiting_time = 8;
+  BookingStatus booking_status = 9;
+  uint64 user_id = 10;
 }
 
 message SearchTripPreviewRequest {
@@ -48,12 +50,10 @@ message SearchTripPreviewResponse {
   string destination = 2;
   double distance = 3;
   double fare = 4;
-  google.protobuf.Timestamp estimated_arrival_time = 5;
+  google.protobuf.Timestamp estimated_arrival_date_time = 5;
   int64 estimated_waiting_time = 6;
   int64 num_of_available_taxis = 7;
-  double nearest_taxi_longitude = 8;
-  double nearest_taxi_latitude = 9;
-  string default_payment_method = 10;
+  repeated double nearest_taxi_coordinates = 8;
 }
 
 message ConfirmBookingRequest {
@@ -61,30 +61,38 @@ message ConfirmBookingRequest {
   string destination = 2;
   double distance = 3;
   double fare = 4;
-  google.protobuf.Timestamp estimated_arrival_time = 5;
-  int64 estimated_waiting_time = 6;
-  int64 num_of_available_taxis = 7;
-  double nearest_taxi_longitude = 8;
-  double nearest_taxi_latitude = 9;
-  string default_payment_method = 10;
-  uint64 userId = 11;
+  string card_number = 5;
+  google.protobuf.Timestamp estimated_arrival_date_time = 6;
+  int64 estimated_waiting_time = 7;
+  BookingStatus booking_status = 8;
+  uint64 user_id = 9;
 }
 
 message ConfirmBookingResponse {
   string result = 1;
-  uint64 id = 2;
-  google.protobuf.Timestamp estimated_arrival_time = 3;
-  int64 estimated_waiting_time = 4;
-  BookingStatus booking_status = 5;
+}
+
+message GetIncompletedBookingRequest {
+  uint64 user_id = 1;
+  BookingStatus booking_status = 2;
+}
+
+message GetIncompletedBookingResponse {
+  TripBooking trip_booking = 1;
 }
 
 // For cancelling or completed
 message UpdateBookingRequest { 
   uint64 id = 1;
-  google.protobuf.Timestamp estimated_arrival_time = 2;
-  int64 estimated_waiting_time = 3;
-  BookingStatus booking_status = 4;
-  uint64 userId = 5;
+  string pickup = 2;
+  string destination = 3;
+  double distance = 4;
+  double fare = 5;
+  string card_number = 6;
+  google.protobuf.Timestamp estimated_arrival_date_time = 7;
+  int64 estimated_waiting_time = 8;
+  BookingStatus booking_status = 9;
+  uint64 user_id = 10;
 }
 
 message UpdateBookingResponse {
@@ -94,7 +102,7 @@ message UpdateBookingResponse {
 message GetBookingHistoryRequest {
   uint64 page = 1;
   uint64 limit = 2;
-  uint64 userId = 3;
+  uint64 user_id = 3;
   // Filters
   repeated BookingStatus booking_statuses = 4; // List of booking statuses to filter by
   

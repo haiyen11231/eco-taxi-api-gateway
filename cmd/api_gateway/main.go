@@ -46,6 +46,8 @@ func main() {
     trip.POST("/", handler.SearchTripPreview())
     trip.Use(middleware.AuthenticateUser) 
     trip.POST("/confirm", handler.ConfirmBooking())
+    // rpc GetIncompletedBooking
+    trip.GET("/incompleted-booking", handler.GetIncompletedBooking())
     trip.PATCH("/:id", handler.UpdateBookingStatus())
     trip.GET("/history", handler.GetBookingHistory())
     
