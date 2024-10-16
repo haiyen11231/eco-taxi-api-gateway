@@ -110,6 +110,9 @@ func LogIn() gin.HandlerFunc {
 			return
 		}
 
+		ctx.SetSameSite(http.SameSiteLaxMode)
+		ctx.SetCookie("Authorization", response.Token, 3600 * 24 * 2, "", "", false, true)
+
 		utils.ResponseSuccess(ctx, http.StatusAccepted, response)
 	}
 }
