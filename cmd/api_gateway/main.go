@@ -36,17 +36,18 @@ func main() {
 
     user := v1.Group("/user")
     user.POST("/signup", handler.SignUp()) 
-    user.POST("/login", handler.LogIn()) 
+    user.PATCH("/reset-password", handler.ForgotPassword())
     user.Use(middleware.AuthenticateUser)
     user.PATCH("/update", handler.UpdateUser()) 
     user.GET("/", handler.GetUser()) 
+    user.PATCH("/change-password", handler.ChangePassword())
+    user.PATCH("/update-distance", handler.UpdateDistanceTravelled())
     user.POST("/authenticate", handler.AuthenticateUser()) 
 
     trip := v1.Group("/trip")
     trip.POST("/", handler.SearchTripPreview())
     trip.Use(middleware.AuthenticateUser) 
     trip.POST("/confirm", handler.ConfirmBooking())
-    // rpc GetIncompletedBooking
     trip.GET("/incompleted-booking", handler.GetIncompletedBooking())
     trip.PATCH("/:id", handler.UpdateBookingStatus())
     trip.GET("/history", handler.GetBookingHistory())

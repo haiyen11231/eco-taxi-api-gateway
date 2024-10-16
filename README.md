@@ -50,6 +50,11 @@ eco-taxi-api-gateway/
 │   ├── middleware/
 │   │   └── auth_user.go
 │   │
+│   ├── model/
+│   │   ├── payment_service.go
+│   │   ├── trip_service.go
+│   │   └── user_service.go
+│   │
 │   └── utils/
 │       ├── grpc_client.go
 │       └── response.go

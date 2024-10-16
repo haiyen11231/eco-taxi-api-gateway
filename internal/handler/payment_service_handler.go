@@ -9,30 +9,13 @@ import (
 	"strconv"
 	"time"
 
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-
 	"github.com/haiyen11231/eco-taxi-api-gateway/internal/grpc/pb"
+	"github.com/haiyen11231/eco-taxi-api-gateway/internal/model"
 	"github.com/haiyen11231/eco-taxi-api-gateway/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"google.golang.org/protobuf/encoding/protojson"
 )
-
-type CreateCardData struct {
-    CardNumber string                 `json:"card_number" binding:"required"`
-	CardHolder string                 `json:"card_holder" binding:"required"`
-	ExpiryDate *timestamppb.Timestamp `json:"expiry_date" binding:"required"`
-	Cvv        uint64                 `json:"cvv" binding:"required"`
-	IsDefault  bool                   `json:"is_default" binding:"required"`
-}
-
-type UpdateCardData struct {
-	CardNumber string                 `json:"card_number"`
-	CardHolder string                 `json:"card_holder"`
-	ExpiryDate *timestamppb.Timestamp `json:"expiry_date"`
-	Cvv        uint64                 `json:"cvv"`
-	IsDefault  bool                   `json:"is_default"`
-}
   
 func GetCards() gin.HandlerFunc {
     return func(ctx *gin.Context) {
@@ -90,7 +73,7 @@ func GetCards() gin.HandlerFunc {
 
 func CreateCard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		createCard := CreateCardData{}
+		createCard := model.CreateCardData{}
 		userId := ctx.GetUint64("user_id")
 
         // Binding the incoming request to create card
@@ -144,7 +127,7 @@ func UpdateCard() gin.HandlerFunc {
 			return
 		}
 
-		updateCard := UpdateCardData{}
+		updateCard := model.UpdateCardData{}
 		userId := ctx.GetUint64("user_id")
 
         // Binding the incoming request to update card
