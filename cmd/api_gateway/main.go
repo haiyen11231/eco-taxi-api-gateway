@@ -36,6 +36,7 @@ func main() {
 
     user := v1.Group("/user")
     user.POST("/signup", handler.SignUp()) 
+    user.POST("/login", handler.LogIn()) 
     user.PATCH("/reset-password", handler.ForgotPassword())
     user.Use(middleware.AuthenticateUser)
     user.PATCH("/update", handler.UpdateUser()) 
