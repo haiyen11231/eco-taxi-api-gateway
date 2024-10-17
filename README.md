@@ -72,16 +72,39 @@ eco-taxi-api-gateway/
 
 ```mermaid
 graph TD
-    Client---|HTTP Request|Api-Gateway
-    Api-Gateway---|gRPC|User-Service
-    Api-Gateway---|gRPC|Trip-Service
-    Api-Gateway---|gRPC|Payment-Service
+    %% Presentation Layer
+    subgraph Presentation
+        Client
+    end
 
-    User-Service---Redis
-    Redis---User-MySQL[(MySQL)]
+    %% Middleware Layer
+    subgraph Middleware
+        Api-Gateway
+    end
 
-    Payment-Service---Payment-MySQL[(MySQL)]
+    %% App Logic Layer
+    subgraph App_Logic [App Logic]
+        User-Service
+        Trip-Service
+        Payment-Service
+    end
 
-    Trip-Service---Trip-MySQL[(MySQL)]
+    %% Persistent Database Layer
+    subgraph Persistent_Database [Persistent Database]
+        Redis
+        User-MySQL[(User MySQL)]
+        Payment-MySQL[(Payment MySQL)]
+        Trip-MySQL[(Trip MySQL)]
+    end
+
+    %% Connections
+    Client ---|HTTP Request| Api-Gateway
+    Api-Gateway ---|gRPC| User-Service
+    Api-Gateway ---|gRPC| Trip-Service
+    Api-Gateway ---|gRPC| Payment-Service
+    User-Service --- Redis
+    Redis --- User-MySQL
+    Payment-Service --- Payment-MySQL
+    Trip-Service --- Trip-MySQL
 
 ```
