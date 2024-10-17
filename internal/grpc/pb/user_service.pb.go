@@ -30,7 +30,7 @@ type User struct {
 	PhoneNumber       string  `protobuf:"bytes,3,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
 	Email             string  `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
 	Password          string  `protobuf:"bytes,5,opt,name=password,proto3" json:"password,omitempty"`
-	DistanceTravelled float64 `protobuf:"fixed64,6,opt,name=distance_travelled,json=distanceTravelled,proto3" json:"distance_travelled,omitempty"`
+	DistanceTravelled float64 `protobuf:"fixed64,6,opt,name=distance_travelled,json=distanceTravelled,proto3" json:"distance_travelled"`
 }
 
 func (x *User) Reset() {
@@ -583,7 +583,7 @@ type GetUserResponse struct {
 	Name              string  `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	PhoneNumber       string  `protobuf:"bytes,3,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
 	Email             string  `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
-	DistanceTravelled float64 `protobuf:"fixed64,5,opt,name=distance_travelled,json=distanceTravelled,proto3" json:"distance_travelled,omitempty"`
+	DistanceTravelled float64 `protobuf:"fixed64,5,opt,name=distance_travelled,json=distanceTravelled,proto3" json:"distance_travelled"`
 }
 
 func (x *GetUserResponse) Reset() {
@@ -763,7 +763,7 @@ type UpdateDistanceTravelledRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id       uint64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Distance float64 `protobuf:"fixed64,2,opt,name=distance,proto3" json:"distance,omitempty"`
+	Distance float64 `protobuf:"fixed64,2,opt,name=distance,proto3" json:"distance"`
 }
 
 func (x *UpdateDistanceTravelledRequest) Reset() {
