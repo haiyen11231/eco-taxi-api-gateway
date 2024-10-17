@@ -92,9 +92,9 @@ graph TD
     %% Persistent Database Layer
     subgraph Persistent_Database [Persistent Database]
         Redis
-        User-MySQL[(User MySQL)]
-        Payment-MySQL[(Payment MySQL)]
-        Trip-MySQL[(Trip MySQL)]
+        User-MySQL[(MySQL)]
+        Payment-MySQL[(MySQL)]
+        Trip-MySQL[(MySQL)]
     end
 
     %% Connections
