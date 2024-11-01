@@ -38,7 +38,7 @@ func main() {
     user.POST("/signup", handler.SignUp()) 
     user.POST("/login", handler.LogIn()) 
     user.PATCH("/reset-password", handler.ForgotPassword())
-    user.PATCH("/refresh-token", handler.RefreshToken()) 
+    user.POST("/refresh-token", handler.RefreshToken()) 
     user.Use(middleware.AuthenticateUser)
     user.PATCH("/update", handler.UpdateUser()) 
     user.GET("/", handler.GetUser()) 
