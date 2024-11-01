@@ -9,12 +9,15 @@ option go_package = "/internal/grpc/pb";
 service UserService {
     rpc SignUp (SignUpRequest) returns (SignUpResponse);
     rpc LogIn (LogInRequest) returns (LogInResponse);
+    rpc LogOut (LogOutRequest) returns (LogOutResponse);
     rpc ForgotPassword (ForgotPasswordRequest) returns (ForgotPasswordResponse);
     rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse); //auth
     rpc GetUser (GetUserRequest) returns (GetUserResponse); //auth
     rpc ChangePassword (ChangePasswordRequest) returns (ChangePasswordResponse); //auth
     rpc UpdateDistanceTravelled (UpdateDistanceTravelledRequest) returns (UpdateDistanceTravelledResponse); //auth
     rpc AuthenticateUser (AuthenticateUserRequest) returns (AuthenticateUserResponse);
+    // rpc GetToken (GetTokenRequest) returns (GetTokenResponse);
+    rpc RefreshToken (RefreshTokenRequest) returns (RefreshTokenResponse);
 }
 
 message User {
@@ -43,8 +46,19 @@ message LogInRequest {
 }
   
 message LogInResponse {
-    string token = 1;
+    uint64 id = 1;
+    string access_token = 2;
+    string refresh_token = 3;
 }
+
+message LogOutRequest {
+    uint64 id = 1;
+}
+  
+message LogOutResponse {
+    string message = 1;
+}
+
 message ForgotPasswordRequest {
     string email = 1;
     string new_password = 2;
@@ -101,7 +115,23 @@ message AuthenticateUserRequest {
 }
   
 message AuthenticateUserResponse {
-    bool valid = 1;
+    bool is_valid = 1;
     string message = 2;
     uint64 user_id = 3;
+}
+
+// message GetTokenRequest {
+//     uint64 user_id = 1;
+// }
+
+// message GetTokenResponse {
+//     string accessToken = 1;
+// }
+
+message RefreshTokenRequest {
+    string refresh_token = 1;
+}
+
+message RefreshTokenResponse {
+    string access_token = 1;
 }

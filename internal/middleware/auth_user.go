@@ -49,7 +49,7 @@ func AuthenticateUser (ctx *gin.Context) {
 		return
 	}
 	
-	if !response.Valid {
+	if !response.IsValid {
 		log.Println("Error ", err)
 		utils.ResponseError(ctx, http.StatusUnauthorized, "Unauthorized!")
 		return
