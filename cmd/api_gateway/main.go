@@ -19,14 +19,14 @@ func main() {
 
 	r := gin.Default() // Creates a new Gin router with default middleware
 
-    r.Use(cors.New(cors.Config{ // Adds CORS middleware
-		AllowOrigins:     []string{"http://localhost"}, // Specifies allowed origins
-		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"}, // Specifies allowed HTTP methods
-		AllowHeaders:     []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"}, // Specifies allowed headers
-		ExposeHeaders:    []string{"Link"}, // Specifies headers exposed to the client
-		AllowCredentials: true, // Allows credentials (e.g., cookies, authorization headers)
-		MaxAge:           300, // Caches the CORS preflight response for 300 seconds
-	}))
+    r.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"http://localhost:5173"}, // Allow your frontend origin
+        AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"}, // Allowed methods
+        AllowHeaders:     []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"}, // Allowed headers
+        ExposeHeaders:    []string{"Link"}, // Headers exposed to the frontend
+        AllowCredentials: true, // Allows cookies or Authorization headers
+        MaxAge:           300, // Cache duration for preflight responses
+    }))
 
     v1 := r.Group("/v1")
 

@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/haiyen11231/eco-taxi-api-gateway/internal/grpc/pb"
@@ -386,10 +385,11 @@ func AuthenticateUser() gin.HandlerFunc {
 
 func RefreshToken() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		refreshToken := strings.TrimPrefix(ctx.GetHeader("Cookie"), "refreshToken=")
-		// refreshToken := ctx.Request.Header.Get("Authorization") // Assuming the refresh token is sent in the Authorization header
-		if refreshToken == "" {
-			utils.ResponseError(ctx, http.StatusBadRequest, "Missing refresh token")
+		// Extracting the refresh token from the cookie
+		refreshToken, err := ctx.Cookie("Authorization")
+		if err != nil {
+			log.Println("Refresh token required")
+			utils.ResponseError(ctx, http.StatusUnauthorized, "Unauthorized!")
 			return
 		}
 
