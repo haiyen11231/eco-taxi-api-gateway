@@ -9,7 +9,7 @@ import "google/protobuf/timestamp.proto";
 service PaymentService {
   rpc GetCards(GetCardsRequest) returns(GetCardsResponse);
   rpc CreateCard(CreateCardRequest) returns(CreateCardResponse);
-  rpc UpdatecCard(UpdateCardRequest) returns(UpdateCardResponse);
+  rpc UpdateCard(UpdateCardRequest) returns(UpdateCardResponse);
   rpc DeleteCard(DeleteCardRequest) returns(DeleteCardResponse);
 }
 

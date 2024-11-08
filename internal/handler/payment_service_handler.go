@@ -165,7 +165,7 @@ func UpdateCard() gin.HandlerFunc {
 
         // Sending a UpdateCardRequest to the gRPC service for updating card
 		log.Println("Request: ", userId, id, updateCard)
-		response, err := client.UpdatecCard(c, &pb.UpdateCardRequest{
+		response, err := client.UpdateCard(c, &pb.UpdateCardRequest{
 			Id:          uint64(id),
 			CardNumber: updateCard.CardNumber,
             CardHolder: updateCard.CardHolder,

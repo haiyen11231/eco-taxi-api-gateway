@@ -19,10 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PaymentService_GetCards_FullMethodName    = "/payment_service.PaymentService/GetCards"
-	PaymentService_CreateCard_FullMethodName  = "/payment_service.PaymentService/CreateCard"
-	PaymentService_UpdatecCard_FullMethodName = "/payment_service.PaymentService/UpdatecCard"
-	PaymentService_DeleteCard_FullMethodName  = "/payment_service.PaymentService/DeleteCard"
+	PaymentService_GetCards_FullMethodName   = "/payment_service.PaymentService/GetCards"
+	PaymentService_CreateCard_FullMethodName = "/payment_service.PaymentService/CreateCard"
+	PaymentService_UpdateCard_FullMethodName = "/payment_service.PaymentService/UpdateCard"
+	PaymentService_DeleteCard_FullMethodName = "/payment_service.PaymentService/DeleteCard"
 )
 
 // PaymentServiceClient is the client API for PaymentService service.
@@ -31,7 +31,7 @@ const (
 type PaymentServiceClient interface {
 	GetCards(ctx context.Context, in *GetCardsRequest, opts ...grpc.CallOption) (*GetCardsResponse, error)
 	CreateCard(ctx context.Context, in *CreateCardRequest, opts ...grpc.CallOption) (*CreateCardResponse, error)
-	UpdatecCard(ctx context.Context, in *UpdateCardRequest, opts ...grpc.CallOption) (*UpdateCardResponse, error)
+	UpdateCard(ctx context.Context, in *UpdateCardRequest, opts ...grpc.CallOption) (*UpdateCardResponse, error)
 	DeleteCard(ctx context.Context, in *DeleteCardRequest, opts ...grpc.CallOption) (*DeleteCardResponse, error)
 }
 
@@ -63,10 +63,10 @@ func (c *paymentServiceClient) CreateCard(ctx context.Context, in *CreateCardReq
 	return out, nil
 }
 
-func (c *paymentServiceClient) UpdatecCard(ctx context.Context, in *UpdateCardRequest, opts ...grpc.CallOption) (*UpdateCardResponse, error) {
+func (c *paymentServiceClient) UpdateCard(ctx context.Context, in *UpdateCardRequest, opts ...grpc.CallOption) (*UpdateCardResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateCardResponse)
-	err := c.cc.Invoke(ctx, PaymentService_UpdatecCard_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, PaymentService_UpdateCard_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (c *paymentServiceClient) DeleteCard(ctx context.Context, in *DeleteCardReq
 type PaymentServiceServer interface {
 	GetCards(context.Context, *GetCardsRequest) (*GetCardsResponse, error)
 	CreateCard(context.Context, *CreateCardRequest) (*CreateCardResponse, error)
-	UpdatecCard(context.Context, *UpdateCardRequest) (*UpdateCardResponse, error)
+	UpdateCard(context.Context, *UpdateCardRequest) (*UpdateCardResponse, error)
 	DeleteCard(context.Context, *DeleteCardRequest) (*DeleteCardResponse, error)
 	mustEmbedUnimplementedPaymentServiceServer()
 }
@@ -107,8 +107,8 @@ func (UnimplementedPaymentServiceServer) GetCards(context.Context, *GetCardsRequ
 func (UnimplementedPaymentServiceServer) CreateCard(context.Context, *CreateCardRequest) (*CreateCardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCard not implemented")
 }
-func (UnimplementedPaymentServiceServer) UpdatecCard(context.Context, *UpdateCardRequest) (*UpdateCardResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdatecCard not implemented")
+func (UnimplementedPaymentServiceServer) UpdateCard(context.Context, *UpdateCardRequest) (*UpdateCardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCard not implemented")
 }
 func (UnimplementedPaymentServiceServer) DeleteCard(context.Context, *DeleteCardRequest) (*DeleteCardResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteCard not implemented")
@@ -170,20 +170,20 @@ func _PaymentService_CreateCard_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PaymentService_UpdatecCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PaymentService_UpdateCard_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateCardRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PaymentServiceServer).UpdatecCard(ctx, in)
+		return srv.(PaymentServiceServer).UpdateCard(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PaymentService_UpdatecCard_FullMethodName,
+		FullMethod: PaymentService_UpdateCard_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PaymentServiceServer).UpdatecCard(ctx, req.(*UpdateCardRequest))
+		return srv.(PaymentServiceServer).UpdateCard(ctx, req.(*UpdateCardRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -222,8 +222,8 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PaymentService_CreateCard_Handler,
 		},
 		{
-			MethodName: "UpdatecCard",
-			Handler:    _PaymentService_UpdatecCard_Handler,
+			MethodName: "UpdateCard",
+			Handler:    _PaymentService_UpdateCard_Handler,
 		},
 		{
 			MethodName: "DeleteCard",
