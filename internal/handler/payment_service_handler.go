@@ -96,7 +96,12 @@ func CreateCard() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
 
+// 		expiryDate := time.Unix(createCard.ExpiryDate, 0) // Convert Unix timestamp to time.Time
+// timestampProto := timestamppb.New(expiryDate) // Convert to timestamppb.Timestamp
+
+
         // Sending a GetCardsRequest to the gRPC service for getting cards
+		log.Println("Request: ", userId, createCard)
 		response, err := client.CreateCard(c, &pb.CreateCardRequest{
 			UserId: userId,
 			CardNumber: createCard.CardNumber,
@@ -120,12 +125,20 @@ func CreateCard() gin.HandlerFunc {
 func UpdateCard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// Retrieving the card ID from the URL parameters and converting it to an integer.
-		id, err := strconv.Atoi(ctx.Params.ByName("id"))
-		if err != nil {
-			log.Println("Failed to convert params", err)
-			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-			return
-		}
+		// id, err := strconv.Atoi(ctx.Params.ByName("id"))
+		// if err != nil {
+		// 	log.Println("Failed to convert params", err)
+		// 	utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
+		// 	return
+		// }
+
+		idStr := ctx.Query("id")
+        id, err := strconv.Atoi(idStr)
+        if err != nil {
+            log.Println("Failed to convert query param id", err)
+            utils.ResponseError(ctx, http.StatusBadRequest, "Invalid ID")
+            return
+        }
 
 		updateCard := model.UpdateCardData{}
 		userId := ctx.GetUint64("user_id")
@@ -151,6 +164,7 @@ func UpdateCard() gin.HandlerFunc {
         defer cancel()
 
         // Sending a UpdateCardRequest to the gRPC service for updating card
+		log.Println("Request: ", userId, id, updateCard)
 		response, err := client.UpdatecCard(c, &pb.UpdateCardRequest{
 			Id:          uint64(id),
 			CardNumber: updateCard.CardNumber,
@@ -175,12 +189,13 @@ func UpdateCard() gin.HandlerFunc {
 func DeleteCard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// Retrieving the card ID from the URL parameters and converting it to an integer.
-		id, err := strconv.Atoi(ctx.Params.ByName("id"))
-		if err != nil {
-			log.Println("Failed to convert params", err)
-			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-			return
-		}
+		idStr := ctx.Query("id")
+        id, err := strconv.Atoi(idStr)
+        if err != nil {
+            log.Println("Failed to convert query param id", err)
+            utils.ResponseError(ctx, http.StatusBadRequest, "Invalid ID")
+            return
+        }
 
 		userId := ctx.GetUint64("user_id")
 

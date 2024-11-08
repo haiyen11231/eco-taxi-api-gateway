@@ -59,8 +59,8 @@ func main() {
     payment.Use(middleware.AuthenticateUser)
     payment.GET("/", handler.GetCards())
     payment.POST("/create", handler.CreateCard()) 
-    payment.PATCH("/:id", handler.UpdateCard()) 
-    payment.DELETE("/:id", handler.DeleteCard())
+    payment.PATCH("/", handler.UpdateCard()) 
+    payment.DELETE("/", handler.DeleteCard())
 
     r.Run(fmt.Sprintf(":%s", os.Getenv("PORT")))
 

@@ -13,6 +13,9 @@ gen-payment-service:
 clean:
 	rm internal/grpc/pb/*.go
 
+run:
+	go run cmd/api_gateway/main.go
+
 # run-server:
 # 	go run server/server.go server/models.go
 # run-client:
