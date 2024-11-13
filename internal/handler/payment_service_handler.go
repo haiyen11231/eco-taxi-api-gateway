@@ -67,7 +67,7 @@ func GetCards() gin.HandlerFunc {
 			cards["result"] = []interface{}{}
 		}
 
-		utils.ResponseSuccess(ctx, http.StatusAccepted, cards)
+		utils.ResponseSuccess(ctx, http.StatusAccepted, cards["result"])
     }
 }
 
@@ -83,6 +83,14 @@ func CreateCard() gin.HandlerFunc {
 			return
 		}
 
+		// Convert CVV to uint64
+        cvv, err := strconv.ParseUint(createCard.Cvv, 10, 64)
+        if err != nil {
+            log.Println("Invalid CVV format:", err)
+            utils.ResponseError(ctx, http.StatusBadRequest, "Invalid CVV format")
+            return
+        }
+
 		// Establishing a gRPC connection
         conn, err := utils.GRPCClient(os.Getenv("GRPC_PAYMENT_HOST"))
         if err != nil {
@@ -96,9 +104,6 @@ func CreateCard() gin.HandlerFunc {
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
 
-// 		expiryDate := time.Unix(createCard.ExpiryDate, 0) // Convert Unix timestamp to time.Time
-// timestampProto := timestamppb.New(expiryDate) // Convert to timestamppb.Timestamp
-
 
         // Sending a GetCardsRequest to the gRPC service for getting cards
 		log.Println("Request: ", userId, createCard)
@@ -107,7 +112,7 @@ func CreateCard() gin.HandlerFunc {
 			CardNumber: createCard.CardNumber,
             CardHolder: createCard.CardHolder,
             ExpiryDate: createCard.ExpiryDate,
-            Cvv: createCard.Cvv,
+            Cvv: cvv,
             IsDefault: createCard.IsDefault,
 		})
 
@@ -124,21 +129,25 @@ func CreateCard() gin.HandlerFunc {
 
 func UpdateCard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// Retrieving the card ID from the URL parameters and converting it to an integer.
-		// id, err := strconv.Atoi(ctx.Params.ByName("id"))
-		// if err != nil {
-		// 	log.Println("Failed to convert params", err)
-		// 	utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
-		// 	return
-		// }
+		// Retrieving the card ID from the URL path parameters and converting it to an integer.
+		idStr := ctx.Param("id")
+		log.Println("id: ", idStr)
+        
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			log.Println("Failed to convert path param id", err)
+			utils.ResponseError(ctx, http.StatusBadRequest, "Invalid ID")
+			return
+		}
 
-		idStr := ctx.Query("id")
-        id, err := strconv.Atoi(idStr)
-        if err != nil {
-            log.Println("Failed to convert query param id", err)
-            utils.ResponseError(ctx, http.StatusBadRequest, "Invalid ID")
-            return
-        }
+		// idStr := ctx.Query("id")
+		// log.Println("id: ", idStr)
+        // id, err := strconv.Atoi(idStr)
+        // if err != nil {
+        //     log.Println("Failed to convert query param id", err)
+        //     utils.ResponseError(ctx, http.StatusBadRequest, "Invalid ID")
+        //     return
+        // }
 
 		updateCard := model.UpdateCardData{}
 		userId := ctx.GetUint64("user_id")
@@ -149,6 +158,14 @@ func UpdateCard() gin.HandlerFunc {
 			utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
 			return
 		}
+
+		// Convert CVV to uint64
+        cvv, err := strconv.ParseUint(updateCard.Cvv, 10, 64)
+        if err != nil {
+            log.Println("Invalid CVV format:", err)
+            utils.ResponseError(ctx, http.StatusBadRequest, "Invalid CVV format")
+            return
+        }
 
 		// Establishing a gRPC connection
         conn, err := utils.GRPCClient(os.Getenv("GRPC_PAYMENT_HOST"))
@@ -170,7 +187,7 @@ func UpdateCard() gin.HandlerFunc {
 			CardNumber: updateCard.CardNumber,
             CardHolder: updateCard.CardHolder,
             ExpiryDate: updateCard.ExpiryDate,
-            Cvv: updateCard.Cvv,
+            Cvv: cvv,
             IsDefault: updateCard.IsDefault,
 			UserId:      userId,
 		})
@@ -188,14 +205,24 @@ func UpdateCard() gin.HandlerFunc {
 
 func DeleteCard() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// Retrieving the card ID from the URL parameters and converting it to an integer.
-		idStr := ctx.Query("id")
-        id, err := strconv.Atoi(idStr)
-        if err != nil {
-            log.Println("Failed to convert query param id", err)
-            utils.ResponseError(ctx, http.StatusBadRequest, "Invalid ID")
-            return
-        }
+		// Retrieving the card ID from the URL path parameters and converting it to an integer.
+		idStr := ctx.Param("id")
+		log.Println("id: ", idStr)
+        
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			log.Println("Failed to convert path param id", err)
+			utils.ResponseError(ctx, http.StatusBadRequest, "Invalid ID")
+			return
+		}
+
+		// idStr := ctx.Query("id")
+        // id, err := strconv.Atoi(idStr)
+        // if err != nil {
+        //     log.Println("Failed to convert query param id", err)
+        //     utils.ResponseError(ctx, http.StatusBadRequest, "Invalid ID")
+        //     return
+        // }
 
 		userId := ctx.GetUint64("user_id")
 
