@@ -1,6 +1,6 @@
 # EcoTaxi API Gateway
 
-The EcoTaxi API Gateway serves as a middleware that handles requests from the frontend and routes them to the corresponding backend services. The API Gateway uses [gRPC](https://grpc.io/docs/languages/go/quickstart/) to communicate with other services, such as the `user-service`, `trip-service` and `payment-service`. The API Gateway itself accepts HTTP requests, serves as gRPC client for every backend service and forwards them to the appropriate services.
+EcoTaxi API Gateway serves as a middleware that handles requests from the frontend and routes them to the corresponding backend services. The API Gateway uses [gRPC](https://grpc.io/docs/languages/go/quickstart/) to communicate with other services, such as the `user-service`, `trip-service` and `payment-service`. The API Gateway itself accepts HTTP requests, serves as gRPC client for every backend service and forwards them to the appropriate services.
 
 ## Git Repositories
 
