@@ -52,6 +52,7 @@ eco-taxi-api-gateway/
 │       ├── grpc_client.go
 │       └── response.go
 │
+├── .gitignore
 ├── app.env
 ├── docker-compose.yml
 ├── Dockerfile
