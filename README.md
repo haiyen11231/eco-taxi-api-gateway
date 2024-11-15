@@ -66,6 +66,7 @@ eco-taxi-api-gateway/
 Before you begin, ensure that you have the following installed:
 
 - **Go**
+- **gRPC Tools** (Protocol Buffers and gRPC Go)
 - **Make**
 - **Docker** (optional, for containerization)
 
