@@ -1,4 +1,4 @@
-# EcoTaxi - API Gateway
+# EcoTaxi API Gateway
 
 This is a API Gateway of EcoTaxi Project using [gRPC](https://grpc.io/docs/languages/go/quickstart/) to communicate with other services: `user-service`, `trip-service` and `payment-service` built with [gin](https://github.com/gin-gonic/gin) and [gorm](https://gorm.io/). Each service has its own database connector, and the services are accessed via `api-gateway` that accepts HTTP requests.
 

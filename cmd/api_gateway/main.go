@@ -48,7 +48,7 @@ func main() {
     user.DELETE("/logout", handler.LogOut()) 
 
     trip := v1.Group("/trip")
-    trip.POST("/", handler.SearchTripPreview())
+    trip.POST("", handler.SearchTripPreview())
     trip.Use(middleware.AuthenticateUser) 
     trip.POST("/confirm", handler.ConfirmBooking())
     trip.GET("/incompleted-booking", handler.GetIncompletedBooking())

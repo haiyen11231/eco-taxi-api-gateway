@@ -28,6 +28,7 @@ func SearchTripPreview() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		searchTripPreview := model.SearchTripPreviewData{}
 
+		log.Println("Request: .....1");
 		// Binding the incoming request to search trip preview
 		if err := ctx.ShouldBindJSON(&searchTripPreview); err != nil {
 			log.Println("Failed to bind json", err)
@@ -35,19 +36,22 @@ func SearchTripPreview() gin.HandlerFunc {
 			return
 		}
 
+		log.Println("Request: .....2");
 		// Establishing a gRPC connection
-        conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
+		conn, err := utils.GRPCClient(os.Getenv("GRPC_TRIP_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
             utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
             return
         }
         defer conn.Close()
+		log.Println("Request: .....3", searchTripPreview);
     
         client := pb.NewTripServiceClient(conn)
         c, cancel := context.WithTimeout(context.Background(), time.Second)
         defer cancel()
     
+		log.Println("Request: .....", searchTripPreview);
         // Sending a SearchTripPreviewRequest to the gRPC service for searching trip preview
 		response, err := client.SearchTripPreview(c, &pb.SearchTripPreviewRequest{
 			Pickup: searchTripPreview.Pickup,
@@ -79,7 +83,7 @@ func ConfirmBooking() gin.HandlerFunc {
 		}
 		
 		// Establishing a gRPC connection
-        conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
+        conn, err := utils.GRPCClient(os.Getenv("GRPC_TRIP_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
             utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
@@ -121,7 +125,7 @@ func GetIncompletedBooking() gin.HandlerFunc {
 		userId := ctx.GetUint64("user_id")
 		
 		// Establishing a gRPC connection
-        conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
+        conn, err := utils.GRPCClient(os.Getenv("GRPC_TRIP_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
             utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
@@ -171,7 +175,7 @@ func UpdateBookingStatus() gin.HandlerFunc {
 		}
 		
 		// Establishing a gRPC connection
-        conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
+        conn, err := utils.GRPCClient(os.Getenv("GRPC_TRIP_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
             utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
@@ -259,7 +263,7 @@ func GetBookingHistory() gin.HandlerFunc {
 
 		
 		// Establishing a gRPC connection
-        conn, err := utils.GRPCClient(os.Getenv("GRPC_Trip_HOST"))
+        conn, err := utils.GRPCClient(os.Getenv("GRPC_TRIP_HOST"))
         if err != nil {
             log.Println("Failed to dial", err)
             utils.ResponseError(ctx, http.StatusBadRequest, err.Error())
