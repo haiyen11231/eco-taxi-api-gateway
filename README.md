@@ -1,25 +1,18 @@
 # EcoTaxi API Gateway
 
-This is a API Gateway of EcoTaxi Project using [gRPC](https://grpc.io/docs/languages/go/quickstart/) to communicate with other services: `user-service`, `trip-service` and `payment-service` built with [gin](https://github.com/gin-gonic/gin) and [gorm](https://gorm.io/). Each service has its own database connector, and the services are accessed via `api-gateway` that accepts HTTP requests.
+The EcoTaxi API Gateway serves as a middleware that handles requests from the frontend and routes them to the corresponding backend services. The API Gateway uses [gRPC](https://grpc.io/docs/languages/go/quickstart/) to communicate with other services, such as the `user-service`, `trip-service` and `payment-service`. The API Gateway itself accepts HTTP requests, serves as gRPC client for every backend service and forwards them to the appropriate services.
 
-## Postman Collection
+## Git Repositories
 
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/23338632-45d13d1b-e210-44a9-8fbb-dbb16aac0293?action=collection%2Ffork&collection-url=entityId%3D23338632-45d13d1b-e210-44a9-8fbb-dbb16aac0293%26entityType%3Dcollection%26workspaceId%3D375a5178-dc50-49c8-9ed3-5295f7908d43#?env%5Bgo-gin-microservices-grpc%5D=W3sia2V5IjoidXJsIiwidmFsdWUiOiJodHRwOi8vbG9jYWxob3N0OjgwODEvIiwiZW5hYmxlZCI6dHJ1ZSwidHlwZSI6ImRlZmF1bHQiLCJzZXNzaW9uVmFsdWUiOiJodHRwOi8vbG9jYWxob3N0OjgwODEvIiwic2Vzc2lvbkluZGV4IjowfSx7ImtleSI6InRva2VuIiwidmFsdWUiOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKMWMyVnlYMmxrSWpveExDSmhkV1FpT2xzaVoyOHRaMmx1TFcxcFkzSnZjMlZ5ZG1salpTMW5jbkJqSWwwc0ltVjRjQ0k2TVRZNE1qa3lNamt3TVN3aWFXRjBJam94TmpneU56VXdNVEF4ZlEuTFJYYmVDeVdBdWtLTHZyTmgtcjFVX1BDajlmSVNaT1A3WDU2bkFHUG43RSIsImVuYWJsZWQiOnRydWUsInR5cGUiOiJzZWNyZXQiLCJzZXNzaW9uVmFsdWUiOiJleUpoYkdjaU9pSklVekkxTmlJc0luUjVjQ0k2SWtwWFZDSjkuZXlKMWMyVnlYMmxrSWpveExDSmhkV1FpT2xzaVoyOHRaMmx1TFcxcFkzSnZjMlZ5ZG1salpTMW5jbkJqSWwwc0ltVjRjQ0k2TVRZNE1qa3lNamt3TVN3aWFXRjBJam94TmpneS4uLiIsInNlc3Npb25JbmRleCI6MX1d)
+This project is part of the EcoTaxi ecosystem, which includes multiple repositories for the frontend, backend services, and API gateway:
 
-## Building and Running the Services
-
-To build and run the services, follow these steps:
-
-1.  Clone this repository.
-2.  Navigate to the `eco-taxi-api-gateway` directory.
-<!-- 3.  Run `make up_build` to build the Docker images for the services.
-3.  Server will be running at http://localhost:8081/ -->
-
-Once the services are running, you can test them with Postman by sending HTTP requests to the gateway service.
+- **Frontend**: [EcoTaxi Frontend](https://github.com/haiyen11231/eco-taxi-frontend.git)
+- **API Gateway**: [EcoTaxi API Gateway](https://github.com/haiyen11231/eco-taxi-api-gateway.git)
+- **User Service**: [EcoTaxi User Service](https://github.com/haiyen11231/eco-taxi-backend-user-service.git)
+- **Payment Service**: [EcoTaxi Payment Service](https://github.com/AWYS7/eco-taxi-payment-service.git)
+- **Trip Service**: [EcoTaxi Trip Service](https://github.com/lukea11/eco-taxi-backend-trip-service.git)
 
 ## Directory Structure
-
-The directory structure for the services is as follows:
 
 ```plaintext
 eco-taxi-api-gateway/
@@ -68,6 +61,57 @@ eco-taxi-api-gateway/
 └── README.md
 ```
 
+## Prerequisites
+
+Before you begin, ensure that you have the following installed:
+
+- **Go**
+- **Make**
+- **Docker** (optional, for containerization)
+
+## Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/haiyen11231/eco-taxi-api-gateway.git
+   cd eco-taxi-api-gateway
+   ```
+
+2. Create the app.env file:
+
+Create a `app.env` file in the root directory of the project. This file should contain the environment variables required for the application to run. Here's a sample `app.env` file:
+
+```env
+GRPC_USER_HOST=user_host
+GRPC_TRIP_HOST=trip_host
+GRPC_PAYMENT_HOST=payment_host
+PORT=port
+```
+
+Update the values with your own configuration:
+
+- **`GRPC_USER_HOST`**: Specify the address of the gRPC User service (e.g., localhost:5002).
+- **`GRPC_TRIP_HOST`**: Specify the address of the gRPC Trip service (e.g., localhost:5003).
+- **`GRPC_PAYMENT_HOST`**: Specify the address of the gRPC Payment service (e.g., localhost:5004).
+- **`PORT`**: Define the port number on which the API Gateway will listen (e.g., 8081).
+
+3. Install dependencies:
+
+   ```bash
+   go mod tidy
+   ```
+
+4. Start the development server:
+
+   ```bash
+   make run
+   ```
+
+## Postman Collection
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://web.postman.co/workspace/Eco-Taxi-Project~f9485719-23fa-4af6-b313-a8d852ab1233/overview)
+
 ## System Architecture Diagram
 
 ```mermaid
@@ -102,9 +146,9 @@ graph TD
     Api-Gateway ---|gRPC| User-Service
     Api-Gateway ---|gRPC| Trip-Service
     Api-Gateway ---|gRPC| Payment-Service
-    User-Service --- Redis
-    Redis --- User-MySQL
-    Payment-Service --- Payment-MySQL
-    Trip-Service --- Trip-MySQL
+    User-Service ---|Redis| Redis
+    User-Service ---|MySQL| User-MySQL
+    Payment-Service ---|MySQL| Payment-MySQL
+    Trip-Service ---|MySQL| Trip-MySQL
 
 ```
