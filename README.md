@@ -135,8 +135,8 @@ graph TD
         Payment-Service
     end
 
-    %% Persistent Database Layer
-    subgraph Persistent_Database [Persistent Database]
+    %% Database Layer
+    subgraph Database [Database]
         Redis
         User-MySQL[(MySQL)]
         Payment-MySQL[(MySQL)]
